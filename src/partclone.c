@@ -804,7 +804,7 @@ void open_log(char* source) {
 void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char *fmt, ...) {
 
 	va_list args;
-	extern cmd_opt opt;
+	cmd_opt opt;
 	char tmp_str[512];
 
 	if (log_level > debug && (!log_exit || opt.force))
