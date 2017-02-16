@@ -37,7 +37,7 @@
 ext2_filsys  fs;
 
 /// open device
-static void fs_open(char* device){
+static int fs_open(char* device){
     errcode_t retval;
     int use_superblock = 0;
     int use_blocksize = 0;
@@ -57,8 +57,10 @@ static void fs_open(char* device){
     } else
 	retval = ext2fs_open (device, flags, use_superblock, use_blocksize, unix_io_manager, &fs);
 
-    if (retval) 
-	log_mesg(0, 1, 1, fs_opt.debug, "%s: Couldn't find valid filesystem superblock.\n", __FILE__);
+    if (retval) {
+        log_mesg(0, 1, 1, fs_opt.debug, "%s: Couldn't find valid filesystem superblock.\n", __FILE__);
+        return - 1;
+    }
 
     ext2fs_mark_valid(fs);
 
@@ -74,25 +76,29 @@ static void fs_open(char* device){
         }
     }
 
+    return 0;
 }
 
 /// close device
 static void fs_close(){
-    ext2fs_close(fs);
+    if (fs) ext2fs_close(fs); fs = NULL;
 }
 
 /// get block size from super block
 static int block_size(){
+    if (!fs) return -1;
     return EXT2_BLOCK_SIZE(fs->super);
 }
 
 /// get total block from super block
 static unsigned long long block_count(){
+    if (!fs) return -1;
     return (unsigned long long)ext2fs_blocks_count(fs->super);
 }
 
 /// get used blocks ( total - free ) from super block
 static unsigned long long get_used_blocks(){
+    if (!fs) return -1;
     return (unsigned long long)(ext2fs_blocks_count(fs->super) - ext2fs_free_blocks_count(fs->super));
 }
 
@@ -114,6 +120,7 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
     log_mesg(2, 0, 0, fs_opt.debug, "%s: read_bitmap %p\n", __FILE__, bitmap);
 
     fs_open(device);
+    if (!fs) return;
     retval = ext2fs_read_bitmaps(fs); /// open extfs bitmap
     if (retval)
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: Couldn't find valid filesystem bitmap.\n", __FILE__);
@@ -213,6 +220,7 @@ static int test_extfs_type(char* device){
     int device_type;
 
     fs_open(device);
+    if (!fs) return -1;
     if(fs->super->s_feature_ro_compat & EXT4_FEATURE_RO_COMPAT_GDT_CSUM){
 	log_mesg(1, 0, 0, fs_opt.debug, "%s: test feature as EXT4\n", __FILE__);
 	device_type = ext4;
@@ -233,7 +241,7 @@ void read_super_blocks(char* device, file_system_info* fs_info)
     fs_type = test_extfs_type(device);
     log_mesg(1, 0, 0, fs_opt.debug, "%s: extfs version is %i\n", __FILE__, fs_type);
     strncpy(fs_info->fs, extfs_MAGIC, FS_MAGIC_SIZE);
-    fs_open(device);
+    if (fs_open(device) != 0) fs_info->block_size = -1; return;
     fs_info->block_size  = block_size();
     fs_info->totalblock  = block_count();
     fs_info->usedblocks  = get_used_blocks();
