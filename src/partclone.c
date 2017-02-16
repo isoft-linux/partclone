@@ -814,6 +814,7 @@ void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char
 	vsnprintf(tmp_str, sizeof(tmp_str), fmt, args);
 	va_end(args);
 
+    opt.ncurses = 0; // we do NOT wannna ncurses even pass -N parameter
 	if (opt.ncurses) {
 #ifdef HAVE_LIBNCURSESW
 		setlocale(LC_ALL, "");
