@@ -120,7 +120,10 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
     log_mesg(2, 0, 0, fs_opt.debug, "%s: read_bitmap %p\n", __FILE__, bitmap);
 
     fs_open(device);
-    if (!fs) return;
+    if (!fs) {
+        printf("ERROR: fs is nullptr!\n");
+        return;
+    }
     retval = ext2fs_read_bitmaps(fs); /// open extfs bitmap
     if (retval)
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: Couldn't find valid filesystem bitmap.\n", __FILE__);
@@ -220,7 +223,10 @@ static int test_extfs_type(char* device){
     int device_type;
 
     fs_open(device);
-    if (!fs) return -1;
+    if (!fs) {
+        printf("DEBUG: fs is nullptr!\n");
+        return -1;
+    }
     if(fs->super->s_feature_ro_compat & EXT4_FEATURE_RO_COMPAT_GDT_CSUM){
 	log_mesg(1, 0, 0, fs_opt.debug, "%s: test feature as EXT4\n", __FILE__);
 	device_type = ext4;
@@ -241,7 +247,11 @@ void read_super_blocks(char* device, file_system_info* fs_info)
     fs_type = test_extfs_type(device);
     log_mesg(1, 0, 0, fs_opt.debug, "%s: extfs version is %i\n", __FILE__, fs_type);
     strncpy(fs_info->fs, extfs_MAGIC, FS_MAGIC_SIZE);
-    if (fs_open(device) != 0) fs_info->block_size = -1; return;
+    if (fs_open(device) != 0) {
+        printf("ERROR: failed to open device!\n");
+        fs_info->block_size = -1;
+        return;
+    }
     fs_info->block_size  = block_size();
     fs_info->totalblock  = block_count();
     fs_info->usedblocks  = get_used_blocks();
