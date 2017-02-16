@@ -850,8 +850,10 @@ void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char
 	/// exit if lexit true
 	if ((!opt.force) && log_exit) {
 		close_ncurses();
+#if 0
 		fprintf(stderr, "Partclone fail, please check %s !\n", opt.logfile);
 		exit(1);
+#endif
 	}
 }
 
@@ -1415,6 +1417,7 @@ int open_source(char* source, cmd_opt* opt) {
 			log_mesg(0, 0, 1, debug, "device (%s) is mounted at %s\n", source, mp);
 			free(mp); mp = NULL;
 			log_mesg(0, 1, 1, debug, "error exit\n");
+            return -1;
 		}
 		if (mp) free(mp); mp = NULL;
 
@@ -1487,6 +1490,7 @@ int open_target(char* target, cmd_opt* opt) {
 			log_mesg(0, 0, 1, debug, "device (%s) is mounted at %s\n", target, mp);
 			free(mp); mp = NULL;
 			log_mesg(0, 1, 1, debug, "error exit\n");
+            return -1;
 		}
 		if (mp) free(mp); mp = NULL;
 
