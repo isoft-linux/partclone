@@ -5,9 +5,11 @@ AM_GNU_GETTEXT([external])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AM_PROG_AS
+AM_PROG_AR
 AC_PROG_INSTALL
 AC_PATH_PROG(RM, rm, rm)
 AC_PROG_LN_S
+LT_INIT
 
 # Enable large file support.
 AC_SYS_LARGEFILE

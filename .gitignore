@@ -1,4 +1,6 @@
 *.o
+*.lo
+*.la
 */Makefile
 Makefile
 autom4te.cache/
@@ -8,6 +10,8 @@ config.status
 configure
 get_lib_version
 Makefile.in
+ar-lib
+libtool
 aclocal.m4
 compile
 depcomp
@@ -18,6 +22,9 @@ fail-mbr/fail-mbr.image
 *.plist
 clang_output_*
 *.exec
+src/.libs
+src/partclone.block
+src/partclone.imgfuse
 src/partclone.btrfs
 src/partclone.fstype
 src/partclone.jfs
