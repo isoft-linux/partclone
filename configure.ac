@@ -6,9 +6,10 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AM_PROG_AS
 AM_PROG_AR
+AM_PROG_LIBTOOL
 AC_PROG_INSTALL
-AC_PATH_PROG(RM, rm, rm)
 AC_PROG_LN_S
+AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
 
 # Enable large file support.
@@ -411,6 +412,13 @@ AC_CHECK_LIB([tinfo], [initscr], tinfo=1,
     AC_MSG_WARN([*** tinfo library (libtinfo) not found]))
 AM_CONDITIONAL(ENABLE_TINFO, test "$tinfo" = 1)
 
+AC_CHECK_LIB(dl, dlopen, HAVE_DL=yes, HAVE_DL=no)
+if test "$HAVE_DL" = "no"; then
+ AC_MSG_ERROR([dl is required])
+fi
+DL_LIBS=-ldl
+AC_SUBST(DL_LIBS)
+
 ##memory tracing##
 AC_ARG_ENABLE([mtrace],
     AS_HELP_STRING(
@@ -420,6 +428,8 @@ AC_ARG_ENABLE([mtrace],
 enable_memtrace=$enable_mtrace
 AM_CONDITIONAL(ENABLE_MEMTRACE, test "$enable_memtrace" = yes)
 
+plugindir='$(libdir)/libpartclone-0.3.5'
+AC_SUBST([plugindir])
 
 ##extra test
 AC_ARG_ENABLE([fs-test],
@@ -432,7 +442,9 @@ AM_CONDITIONAL(ENABLE_FS_TEST, test "$enable_fs_test" = yes)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
 	Makefile
+    partclone-0.3.5.pc
 	src/Makefile
+    lib/Makefile
 	fail-mbr/Makefile
 	po/Makefile.in
 	docs/Makefile

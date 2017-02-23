@@ -55,7 +55,12 @@ fs_cmd_opt fs_opt;
 /**
  * main function - for clone or restore data
  */
+#ifdef LIBPARTCLONE
+int libpartclone_main(int argc, char **argv) 
+{
+#else
 int main(int argc, char **argv) {
+#endif
 #ifdef MEMTRACE
 	setenv("MALLOC_TRACE", "partclone_mtrace.log", 1);
 	mtrace();

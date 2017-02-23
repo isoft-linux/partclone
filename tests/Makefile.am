@@ -72,3 +72,21 @@ TESTS += ncursesw.test
 endif
 endif
 CLEANFILES = floppy*
+
+noinst_PROGRAMS = test-libpartclone-extfs	\
+				  test-libpartclone-ntfs	\
+				  $(NULL)
+
+test_libpartclone_extfs_SOURCES = test-libpartclone-extfs.c	\
+								  $(NULL)
+test_libpartclone_extfs_CFLAGS = -DLIBDIR=\""$(libdir)"\"	\
+								 $(NULL)
+test_libpartclone_extfs_LDADD = ${DL_LIBS}	\
+								$(NULL)
+
+test_libpartclone_ntfs_SOURCES = test-libpartclone-ntfs.c	\
+								 $(NULL)
+test_libpartclone_ntfs_CFLAGS = -DLIBDIR=\""$(libdir)"\"   \
+								$(NULL)
+test_libpartclone_ntfs_LDADD = ${DL_LIBS}  \
+							   $(NULL)
