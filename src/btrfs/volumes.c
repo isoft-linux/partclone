@@ -1346,6 +1346,7 @@ int __btrfs_map_block(struct btrfs_mapping_tree *map_tree, int rw,
 		stripes_allocated = 1;
 	}
 again:
+    if (raid_map) kfree(raid_map); raid_map = NULL;
 	ce = search_cache_extent(&map_tree->cache_tree, logical);
 	if (!ce) {
 		kfree(multi);
