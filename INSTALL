@@ -1,4 +1,5 @@
-#required library
+Required library
+----------------
 
 e2fsprogs (official library)
 ntfs3g | ntfsprogs (official library)
@@ -12,12 +13,33 @@ ufs (patched library, not in debian)
 jfs (patched library, not in debian)
 xfs (patched library, not in debian)
 
-#check patched library here: http://free.nchc.org.tw/drbl-core/pool/drbl/dev/
+NOTE: check patched library here: http://free.nchc.org.tw/drbl-core/pool/drbl/dev/
 
-# Installation
-autoreconf # optional
-./configure --enable-ncursesw --enable-all
-make
+Installation
+------------
+
+git checkout libpartclone
+
+libtoolize --force --copy
+aclocal -I m4
+autoconf
+autoheader
+automake --add-missing
+./configure --prefix=/usr \
+    --disable-static \
+    --enable-extfs \
+    --disable-reiserfs \
+    --enable-fat \
+    --enable-hfsp \
+    --enable-btrfs \
+    --disable-ncursesw \
+    --enable-ntfs \
+    --enable-exfat \
+    --enable-f2fs \
+    --enable-minix \
+    --disable-nilfs2 \
+    --enable-xfs
+
+make clean
+make -j4
 sudo make install
-
-please access partclone.org for more information

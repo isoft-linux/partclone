@@ -7,6 +7,9 @@ if [[ -z "$clang_version" ]]; then
     clang_version=4.0.0
 fi
 
+echo "How to generate Preprocessed file:"
+echo "$ clang -E partclone/src/partclone.c ~/partclone.c"
+
 cmd="clang -cc1 -triple x86_64-unknown-linux-gnu -analyze -disable-free \
     -disable-llvm-verifier -main-file-name $file -analyzer-store=region \
     -analyzer-opt-analyze-nested-blocks -analyzer-eagerly-assume \
