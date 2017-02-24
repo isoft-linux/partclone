@@ -234,7 +234,7 @@ int main(int argc, char **argv) {
 
 		log_mesg(0, 0, 1, debug, "done!\n");
 
-	} else if (opt.restore) {
+        } else if (opt.restore) {
 
 		image_head_v2 img_head;
 

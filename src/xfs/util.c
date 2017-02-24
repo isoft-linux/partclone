@@ -561,6 +561,9 @@ libxfs_alloc_file_space(
 		datablocks = allocatesize_fsb;
 
 		tp = xfs_trans_alloc(mp, XFS_TRANS_DIOSTRAT);
+        if (tp == NULL ) {
+			goto error0;
+        }
 		resblks = (uint)XFS_DIOSTRAT_SPACE_RES(mp, datablocks);
 		error = xfs_trans_reserve(tp, &M_RES(mp)->tr_write,
 					  resblks, 0);
@@ -575,7 +578,9 @@ libxfs_alloc_file_space(
 			xfs_trans_cancel(tp);
 			break;
 		}
-		xfs_trans_ijoin(tp, ip, 0);
+		if (xfs_trans_ijoin(tp, ip, 0) ) {
+			goto error0;
+        }
 
 		xfs_bmap_init(&free_list, &firstfsb);
 		error = xfs_bmapi_write(tp, ip, startoffset_fsb, allocatesize_fsb,
@@ -663,9 +668,12 @@ libxfs_inode_alloc(
 		if (error) {
 			fprintf(stderr, _("%s: cannot duplicate transaction: %s\n"),
 				progname, strerror(error));
-			exit(1);
+            return -1;
 		}
-		xfs_trans_bjoin(*tp, ialloc_context);
+		if (xfs_trans_bjoin(*tp, ialloc_context) ) {
+			fprintf(stderr, "%s:call xfs_trans_bjoin error!\n");
+            return -1;
+        }
 		error = libxfs_ialloc(*tp, pip, mode, nlink, rdev, cr,
 				   fsx, 1, &ialloc_context, &ip);
 		if (!ip)

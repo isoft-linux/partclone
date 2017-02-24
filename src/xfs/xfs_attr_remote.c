@@ -477,7 +477,8 @@ xfs_attr_rmtval_set(
 		 * a new one.  We need the inode to be in all transactions.
 		 */
 		if (committed)
-			xfs_trans_ijoin(args->trans, dp, 0);
+			if (xfs_trans_ijoin(args->trans, dp, 0) ) 
+                return -1;
 
 		ASSERT(nmap == 1);
 		ASSERT((map.br_startblock != DELAYSTARTBLOCK) &&
@@ -631,7 +632,8 @@ xfs_attr_rmtval_remove(
 		 * a new one.  We need the inode to be in all transactions.
 		 */
 		if (committed)
-			xfs_trans_ijoin(args->trans, args->dp, 0);
+			if (xfs_trans_ijoin(args->trans, args->dp, 0) )
+                return -1;
 
 		/*
 		 * Close out trans and start the next one in the chain.

@@ -129,7 +129,7 @@ platform_flush_device(int fd, dev_t device)
 		ioctl(fd, BLKFLSBUF, 0);
 }
 
-void
+int
 platform_findsizes(char *path, int fd, long long *sz, int *bsz)
 {
 	struct stat64	st;
@@ -140,7 +140,7 @@ platform_findsizes(char *path, int fd, long long *sz, int *bsz)
 		fprintf(stderr, _("%s: "
 			"cannot stat the device file \"%s\": %s\n"),
 			progname, path, strerror(errno));
-		exit(1);
+        return -1;
 	}
 	if ((st.st_mode & S_IFMT) == S_IFREG) {
 		struct xfs_fsop_geom_v1 geom = { 0 };
@@ -172,7 +172,7 @@ platform_findsizes(char *path, int fd, long long *sz, int *bsz)
 		if (error < 0) {
 			fprintf(stderr, _("%s: can't determine device size\n"),
 				progname);
-			exit(1);
+            return -1;
 		}
 		*sz = (long long)tmpsize;
 	}
@@ -227,7 +227,7 @@ platform_physmem(void)
 	if (sysinfo(&si) < 0) {
 		fprintf(stderr, _("%s: can't determine memory size\n"),
 			progname);
-		exit(1);
+        return 0;
 	}
 	return (si.totalram >> 10) * si.mem_unit;	/* kilobytes */
 }

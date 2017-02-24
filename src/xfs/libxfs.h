@@ -138,11 +138,11 @@ extern int	libxfs_init (libxfs_init_t *);
 extern void	libxfs_destroy (void);
 extern int	libxfs_device_to_fd (dev_t);
 extern dev_t	libxfs_device_open (char *, int, int, int);
-extern void	libxfs_device_zero(struct xfs_buftarg *, xfs_daddr_t, uint);
+extern int	libxfs_device_zero(struct xfs_buftarg *, xfs_daddr_t, uint);
 extern void	libxfs_device_close (dev_t);
 extern int	libxfs_device_alignment (void);
 extern void	libxfs_report(FILE *);
-extern void	platform_findsizes(char *path, int fd, long long *sz, int *bsz);
+extern int 	platform_findsizes(char *path, int fd, long long *sz, int *bsz);
 extern int	platform_nproc(void);
 
 /* check or write log footer: specify device, log size in blocks & uuid */

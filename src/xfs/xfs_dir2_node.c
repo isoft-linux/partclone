@@ -1576,6 +1576,11 @@ xfs_dir2_node_addname(
 	 * Allocate and initialize the state (btree cursor).
 	 */
 	state = xfs_da_state_alloc();
+    if (state == NULL) {
+        error = -1;
+        goto done;
+    }
+
 	state->args = args;
 	state->mp = args->dp->i_mount;
 	/*
@@ -1623,6 +1628,7 @@ xfs_dir2_node_addname(
 		rval = xfs_da3_split(state);
 	}
 done:
+    if (state != NULL)
 	xfs_da_state_free(state);
 	return rval;
 }
@@ -2019,6 +2025,9 @@ xfs_dir2_node_lookup(
 	 * Allocate and initialize the btree cursor.
 	 */
 	state = xfs_da_state_alloc();
+    if (state == NULL) {
+        return -1;
+    }
 	state->args = args;
 	state->mp = args->dp->i_mount;
 	/*
@@ -2072,6 +2081,9 @@ xfs_dir2_node_removename(
 	 * Allocate and initialize the btree cursor.
 	 */
 	state = xfs_da_state_alloc();
+    if (state == NULL) {
+        return -1;
+    }
 	state->args = args;
 	state->mp = args->dp->i_mount;
 
@@ -2141,6 +2153,8 @@ xfs_dir2_node_replace(
 	 * Allocate and initialize the btree cursor.
 	 */
 	state = xfs_da_state_alloc();
+    if (state == NULL)
+        return -1;
 	state->args = args;
 	state->mp = args->dp->i_mount;
 	/*

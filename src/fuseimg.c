@@ -43,7 +43,7 @@ void info_usage(void)
 		    "Usage: partclone.fuseimg [FILE] [mount point]\n"
 		    "\n"
 		    , VERSION);
-    exit(1);
+    return;
 }
 unsigned long pathtoblock(const char *path)
 {

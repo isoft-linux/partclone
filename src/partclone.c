@@ -252,12 +252,12 @@ void usage(void) {
 		"    -v,  --version          Display partclone version\n"
 		"    -h,  --help             Display this help\n"
 		, get_exec_name(), VERSION, get_exec_name(), DEFAULT_BUFFER_SIZE);
-	exit(0);
+        return;
 }
 
 void print_version(void){
 	printf("Partclone : v%s (%s) \n", VERSION, git_version);
-	exit(0);
+        return;
 }
 
 int convert_to_checksum_mode(unsigned long mode) {
@@ -536,22 +536,22 @@ void parse_options(int argc, char **argv, cmd_opt* opt) {
 
 	if ((!opt->target) && (!opt->source)) {
 		fprintf(stderr, "There is no image name. Use --help get more info.\n");
-		exit(0);
+                return;
 	}
 
 	if (opt->buffer_size < 512) {
 		fprintf(stderr, "Too small or bad buffer size. Use --help get more info.\n");
-		exit(0);
+                return;
 	}
 
 	if (opt->offset < 0) {
 		fprintf(stderr, "Too small or bad offset. Use --help get more info.\n");
-		exit(0);
+                return;
 	}
 
 	if (opt->offset_domain < 0) {
 		fprintf(stderr, "Too small or bad offset of domain file. Use --help get more info.\n");
-		exit(0);
+                return;
 	}
 
 	if (!opt->target)
@@ -565,7 +565,7 @@ void parse_options(int argc, char **argv, cmd_opt* opt) {
 			fprintf(stderr, "Partclone can't %s from stdin.\nFor help, type: %s -h\n",
 				opt->clone ? "clone" : "make domain log",
 				get_exec_name());
-			exit(0);
+                        return;
 		}
 	}
 
@@ -574,13 +574,13 @@ void parse_options(int argc, char **argv, cmd_opt* opt) {
 		if (opt->blocks_per_checksum > 0) {
 			fprintf(stderr, "No checksum mode specified with blocks_per_checksum\n"
 				"Use --help to get more info.\n");
-			exit(0);
+                        return;
 		}
 
 		if (!opt->reseed_checksum) {
 			fprintf(stderr, "No checksum mode specified with reseed_checksum\n"
 				"Use --help to get more info.\n");
-			exit(0);
+                        return;
 		}
 
 	}
@@ -589,7 +589,7 @@ void parse_options(int argc, char **argv, cmd_opt* opt) {
 	if (opt->restore) {
 		if ((!strcmp(opt->target, "-")) || (!opt->target)) {
 			fprintf(stderr, "Partclone can't restore to stdout.\nFor help,type: %s -h\n", get_exec_name());
-			exit(0);
+                        return;
 		}
 	}
 #endif
@@ -797,7 +797,7 @@ void open_log(char* source) {
 	msg = fopen(source,"w");
 	if (msg == NULL) {
 		fprintf(stderr, "open logfile %s error\n", source);
-		exit(0);
+                return;
 	}
 }
 
@@ -806,6 +806,9 @@ void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char
 	va_list args;
 	cmd_opt opt;
 	char tmp_str[512];
+
+    if (msg == NULL)
+        return;
 
 	if (log_level > debug && (!log_exit || opt.force))
 		return;
@@ -852,13 +855,14 @@ void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char
 		close_ncurses();
 #if 0
 		fprintf(stderr, "Partclone fail, please check %s !\n", opt.logfile);
-		exit(1);
+                return;
 #endif
 	}
 }
 
 void close_log(void) {
 	fclose(msg);
+        msg = NULL;
 }
 
 void load_image_desc_v1(file_system_info* fs_info, image_options* img_opt,

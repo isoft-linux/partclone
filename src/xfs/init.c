@@ -91,7 +91,7 @@ libxfs_device_to_fd(dev_t device)
 
 	fprintf(stderr, _("%s: %s: device %lld is not open\n"),
 		progname, __FUNCTION__, (long long)device);
-	exit(1);
+    return -1;
 	/* NOTREACHED */
 }
 
@@ -278,14 +278,20 @@ libxfs_init(libxfs_init_t *a)
 			a->ddev= libxfs_device_open(dname, a->dcreat, flags,
 						    a->setblksize);
 			a->dfd = libxfs_device_to_fd(a->ddev);
+            if (a->dfd == -1)
+                goto done;
 		} else {
 			if (!check_open(dname, flags, &rawfile, &blockfile))
 				goto done;
 			a->ddev = libxfs_device_open(rawfile,
 					a->dcreat, flags, a->setblksize);
 			a->dfd = libxfs_device_to_fd(a->ddev);
-			platform_findsizes(rawfile, a->dfd,
+            if (a->dfd == -1)
+                goto done;
+			int ret = platform_findsizes(rawfile, a->dfd,
 						&a->dsize, &a->dbsize);
+            if (ret != 0)
+                goto done;
 		}
 		needcd = 1;
 	} else
@@ -297,14 +303,20 @@ libxfs_init(libxfs_init_t *a)
 			a->logdev = libxfs_device_open(logname,
 					a->lcreat, flags, a->setblksize);
 			a->logfd = libxfs_device_to_fd(a->logdev);
+            if (a->logfd == -1)
+                goto done;
 		} else {
 			if (!check_open(logname, flags, &rawfile, &blockfile))
 				goto done;
 			a->logdev = libxfs_device_open(rawfile,
 					a->lcreat, flags, a->setblksize);
 			a->logfd = libxfs_device_to_fd(a->logdev);
-			platform_findsizes(rawfile, a->logfd,
+            if (a->logfd == -1)
+                goto done;
+			int ret = platform_findsizes(rawfile, a->logfd,
 						&a->logBBsize, &a->lbsize);
+            if (ret != 0)
+                goto done;
 		}
 		needcd = 1;
 	} else
@@ -316,14 +328,20 @@ libxfs_init(libxfs_init_t *a)
 			a->rtdev = libxfs_device_open(rtname,
 					a->rcreat, flags, a->setblksize);
 			a->rtfd = libxfs_device_to_fd(a->rtdev);
+            if (a->rtfd == -1)
+                goto done;
 		} else {
 			if (!check_open(rtname, flags, &rawfile, &blockfile))
 				goto done;
 			a->rtdev = libxfs_device_open(rawfile,
 					a->rcreat, flags, a->setblksize);
 			a->rtfd = libxfs_device_to_fd(a->rtdev);
-			platform_findsizes(rawfile, a->rtfd,
+            if (a->rtfd == -1)
+                goto done;
+			int ret = platform_findsizes(rawfile, a->rtfd,
 						&a->rtsize, &a->rtbsize);
+            if (ret != 0)
+                goto done;
 		}
 		needcd = 1;
 	} else
@@ -399,6 +417,7 @@ manage_zones(int release)
 		return;
 	}
 	/* otherwise initialise zone allocation */
+    //todo:allocation failed,so...
 	xfs_buf_zone = kmem_zone_init(sizeof(xfs_buf_t), "xfs_buffer");
 	xfs_inode_zone = kmem_zone_init(sizeof(struct xfs_inode), "xfs_inode");
 	xfs_ifork_zone = kmem_zone_init(sizeof(xfs_ifork_t), "xfs_ifork");

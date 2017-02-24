@@ -41,7 +41,7 @@ void info_usage(void) {
 		"    -v,  --version          Display partclone version\n"
 		"    -h,  --help             Display this help\n"
 		, VERSION);
-	exit(1);
+	return;
 }
 
 

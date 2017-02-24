@@ -54,7 +54,7 @@ libxfs_trans_init(
  *
  * The log item will now point to its new descriptor with its li_desc field.
  */
-void
+int
 libxfs_trans_add_item(
 	struct xfs_trans	*tp,
 	struct xfs_log_item	*lip)
@@ -69,7 +69,8 @@ libxfs_trans_add_item(
 		fprintf(stderr, _("%s: lidp calloc failed (%d bytes): %s\n"),
 			progname, (int)sizeof(struct xfs_log_item_desc),
 			strerror(errno));
-		exit(1);
+        return -1;
+
 	}
 
 	lidp->lid_item = lip;
@@ -77,6 +78,7 @@ libxfs_trans_add_item(
 	list_add_tail(&lidp->lid_trans, &tp->t_items);
 
 	lip->li_desc = lidp;
+    return 0;
 }
 
 /*
@@ -120,6 +122,10 @@ libxfs_trans_roll(
 	tres.tr_logres = trans->t_log_res;
 	tres.tr_logcount = trans->t_log_count;
 	*tpp = libxfs_trans_alloc(trans->t_mountp, trans->t_type);
+    if (*tpp == NULL) {
+		fprintf(stderr, "call libxfs_trans_alloc error!\n");
+        return -1;
+    }
 
 	/*
 	 * Commit the current transaction.
@@ -151,7 +157,9 @@ libxfs_trans_roll(
 		return error;
 
 	if (dp)
-		xfs_trans_ijoin(trans, dp, 0);
+		if (xfs_trans_ijoin(trans, dp, 0) != 0) {
+            return -1;
+        }
 	return 0;
 }
 
@@ -165,7 +173,7 @@ libxfs_trans_alloc(
 	if ((ptr = calloc(sizeof(xfs_trans_t), 1)) == NULL) {
 		fprintf(stderr, _("%s: xact calloc failed (%d bytes): %s\n"),
 			progname, (int)sizeof(xfs_trans_t), strerror(errno));
-		exit(1);
+        return NULL;
 	}
 	ptr->t_mountp = mp;
 	ptr->t_type = type;
@@ -239,7 +247,9 @@ libxfs_trans_iget(
 	if (ip->i_itemp == NULL)
 		xfs_inode_item_init(ip, mp);
 	iip = ip->i_itemp;
-	xfs_trans_add_item(tp, (xfs_log_item_t *)(iip));
+	if (xfs_trans_add_item(tp, (xfs_log_item_t *)(iip)) !=0 ) {
+        return -1;
+    }
 
 	/* initialize i_transp so we can find it incore */
 	ip->i_transp = tp;
@@ -248,7 +258,7 @@ libxfs_trans_iget(
 	return 0;
 }
 
-void
+int
 libxfs_trans_ijoin(
 	xfs_trans_t		*tp,
 	xfs_inode_t		*ip,
@@ -263,15 +273,18 @@ libxfs_trans_ijoin(
 	ASSERT(iip->ili_flags == 0);
 	ASSERT(iip->ili_inode != NULL);
 
-	xfs_trans_add_item(tp, (xfs_log_item_t *)(iip));
+	if (xfs_trans_add_item(tp, (xfs_log_item_t *)(iip)) != 0 ) {
+        return -1;
+    }
 
 	ip->i_transp = tp;
 #ifdef XACT_DEBUG
 	fprintf(stderr, "ijoin'd inode %llu, transaction %p\n", ip->i_ino, tp);
 #endif
+    return 0;
 }
 
-void
+int
 libxfs_trans_ijoin_ref(
 	xfs_trans_t		*tp,
 	xfs_inode_t		*ip,
@@ -280,11 +293,14 @@ libxfs_trans_ijoin_ref(
 	ASSERT(ip->i_transp == tp);
 	ASSERT(ip->i_itemp != NULL);
 
-	xfs_trans_ijoin(tp, ip, lock_flags);
+	if (xfs_trans_ijoin(tp, ip, lock_flags) != 0) {
+        return -1;
+    }
 
 #ifdef XACT_DEBUG
 	fprintf(stderr, "ijoin_ref'd inode %llu, transaction %p\n", ip->i_ino, tp);
 #endif
+    return 0;
 }
 
 void
@@ -428,7 +444,7 @@ libxfs_trans_binval(
 	tp->t_flags |= XFS_TRANS_DIRTY;
 }
 
-void
+int 
 libxfs_trans_bjoin(
 	xfs_trans_t		*tp,
 	xfs_buf_t		*bp)
@@ -442,8 +458,10 @@ libxfs_trans_bjoin(
 
 	xfs_buf_item_init(bp, tp->t_mountp);
 	bip = XFS_BUF_FSPRIVATE(bp, xfs_buf_log_item_t *);
-	xfs_trans_add_item(tp, (xfs_log_item_t *)bip);
+	if (xfs_trans_add_item(tp, (xfs_log_item_t *)bip)) 
+        return -1;
 	XFS_BUF_SET_FSPRIVATE2(bp, tp);
+    return 0;
 }
 
 void
@@ -497,6 +515,7 @@ libxfs_trans_get_buf_map(
 	bip = XFS_BUF_FSPRIVATE(bp, xfs_buf_log_item_t*);
 	bip->bli_recur = 0;
 	xfs_trans_add_item(tp, (xfs_log_item_t *)bip);
+    //todo:xfs_trans_add_item failed, then ...
 
 	/* initialize b_fsprivate2 so we can find it incore */
 	XFS_BUF_SET_FSPRIVATE2(bp, tp);
@@ -535,6 +554,7 @@ libxfs_trans_getsb(
 	bip = XFS_BUF_FSPRIVATE(bp, xfs_buf_log_item_t*);
 	bip->bli_recur = 0;
 	xfs_trans_add_item(tp, (xfs_log_item_t *)bip);
+    //todo:xfs_trans_add_item failed, then ...
 
 	/* initialize b_fsprivate2 so we can find it incore */
 	XFS_BUF_SET_FSPRIVATE2(bp, tp);
@@ -591,7 +611,10 @@ libxfs_trans_read_buf_map(
 	xfs_buf_item_init(bp, tp->t_mountp);
 	bip = XFS_BUF_FSPRIVATE(bp, xfs_buf_log_item_t *);
 	bip->bli_recur = 0;
-	xfs_trans_add_item(tp, (xfs_log_item_t *)bip);
+	if (xfs_trans_add_item(tp, (xfs_log_item_t *)bip) ) {
+        error = -1;
+		goto out_relse;
+    }
 
 	/* initialise b_fsprivate2 so we can find it incore */
 	XFS_BUF_SET_FSPRIVATE2(bp, tp);

@@ -15,7 +15,7 @@ kmem_zone_init(int size, char *name)
 		fprintf(stderr, _("%s: zone init failed (%s, %d bytes): %s\n"),
 			progname, name, (int)sizeof(kmem_zone_t), 
 			strerror(errno));
-		exit(1);
+        return NULL;
 	}
 	ptr->zone_unitsize = size;
 	ptr->zone_name = name;
@@ -32,7 +32,7 @@ kmem_zone_alloc(kmem_zone_t *zone, int flags)
 		fprintf(stderr, _("%s: zone alloc failed (%s, %d bytes): %s\n"),
 			progname, zone->zone_name, zone->zone_unitsize,
 			strerror(errno));
-		exit(1);
+        return NULL;
 	}
 	zone->allocated++;
 	return ptr;
@@ -41,6 +41,9 @@ void *
 kmem_zone_zalloc(kmem_zone_t *zone, int flags)
 {
 	void	*ptr = kmem_zone_alloc(zone, flags);
+    if (ptr == NULL) {
+        return NULL;
+    }
 
 	memset(ptr, 0, zone->zone_unitsize);
 	return ptr;
@@ -55,7 +58,7 @@ kmem_alloc(size_t size, int flags)
 	if (ptr == NULL) {
 		fprintf(stderr, _("%s: malloc failed (%d bytes): %s\n"),
 			progname, (int)size, strerror(errno));
-		exit(1);
+        return NULL;
 	}
 	return ptr;
 }
@@ -76,7 +79,7 @@ kmem_realloc(void *ptr, size_t new_size, size_t old_size, int flags)
 	if (ptr == NULL) {
 		fprintf(stderr, _("%s: realloc failed (%d bytes): %s\n"),
 			progname, (int)new_size, strerror(errno));
-		exit(1);
+        return NULL;
 	}
 	return ptr;
 }

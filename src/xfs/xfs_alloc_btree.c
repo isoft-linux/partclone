@@ -461,6 +461,8 @@ xfs_allocbt_init_cursor(
 	ASSERT(btnum == XFS_BTNUM_BNO || btnum == XFS_BTNUM_CNT);
 
 	cur = kmem_zone_zalloc(xfs_btree_cur_zone, KM_SLEEP);
+    if (cur == NULL)
+        return NULL;
 
 	cur->bc_tp = tp;
 	cur->bc_mp = mp;

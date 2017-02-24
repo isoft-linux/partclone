@@ -584,6 +584,8 @@ xfs_bmap_add_free(
 #endif
 	ASSERT(xfs_bmap_free_item_zone != NULL);
 	new = kmem_zone_alloc(xfs_bmap_free_item_zone, KM_SLEEP);
+    if (new == NULL)
+        return;
 	new->xbfi_startblock = bno;
 	new->xbfi_blockcount = (xfs_extlen_t)len;
 	for (prev = NULL, cur = flist->xbf_first;
@@ -1110,6 +1112,9 @@ xfs_bmap_add_attrfork(
 	mp = ip->i_mount;
 	ASSERT(!XFS_NOT_DQATTACHED(mp, ip));
 	tp = xfs_trans_alloc(mp, XFS_TRANS_ADDAFORK);
+    if (tp == NULL) {
+        return -1;
+    }
 	blks = XFS_ADDAFORK_SPACE_RES(mp);
 	if (rsvd)
 		tp->t_flags |= XFS_TRANS_RESERVE;
@@ -1135,7 +1140,8 @@ xfs_bmap_add_attrfork(
 	}
 	ASSERT(ip->i_d.di_anextents == 0);
 
-	xfs_trans_ijoin(tp, ip, 0);
+	if (xfs_trans_ijoin(tp, ip, 0))
+		goto trans_cancel;
 	xfs_trans_log_inode(tp, ip, XFS_ILOG_CORE);
 
 	switch (ip->i_d.di_format) {
@@ -1162,6 +1168,10 @@ xfs_bmap_add_attrfork(
 
 	ASSERT(ip->i_afp == NULL);
 	ip->i_afp = kmem_zone_zalloc(xfs_ifork_zone, KM_SLEEP);
+	if (ip->i_afp == NULL) {
+        error = -1;
+		goto trans_cancel;
+    }
 	ip->i_afp->if_flags = XFS_IFEXTENTS;
 	logflags = 0;
 	xfs_bmap_init(&flist, &firstblock);
@@ -5093,7 +5103,8 @@ xfs_bunmapi(
 		 * Synchronize by locking the bitmap inode.
 		 */
 		xfs_ilock(mp->m_rbmip, XFS_ILOCK_EXCL);
-		xfs_trans_ijoin(tp, mp->m_rbmip, XFS_ILOCK_EXCL);
+		if (xfs_trans_ijoin(tp, mp->m_rbmip, XFS_ILOCK_EXCL))
+            return -1;//totest
 	}
 
 	extno = 0;
@@ -5913,6 +5924,9 @@ xfs_bmap_split_extent(
 	int                     error;
 
 	tp = xfs_trans_alloc(mp, XFS_TRANS_DIOSTRAT);
+    if (tp == NULL) {
+        return -1;
+    }
 	error = xfs_trans_reserve(tp, &M_RES(mp)->tr_write,
 			XFS_DIOSTRAT_SPACE_RES(mp, 0), 0);
 	if (error) {
@@ -5921,7 +5935,10 @@ xfs_bmap_split_extent(
 	}
 
 	xfs_ilock(ip, XFS_ILOCK_EXCL);
-	xfs_trans_ijoin(tp, ip, XFS_ILOCK_EXCL);
+	if (xfs_trans_ijoin(tp, ip, XFS_ILOCK_EXCL)) {
+        error = -1;
+        goto out;
+    }
 
 	xfs_bmap_init(&free_list, &firstfsb);
 

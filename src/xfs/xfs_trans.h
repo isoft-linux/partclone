@@ -95,14 +95,14 @@ struct xfs_buf *libxfs_trans_getsb(struct xfs_trans *, struct xfs_mount *, int);
 
 int	libxfs_trans_iget(struct xfs_mount *, struct xfs_trans *, xfs_ino_t,
 				uint, uint, struct xfs_inode **);
-void	libxfs_trans_ijoin(struct xfs_trans *, struct xfs_inode *, uint);
-void	libxfs_trans_ijoin_ref(struct xfs_trans *, struct xfs_inode *, int);
+int	libxfs_trans_ijoin(struct xfs_trans *, struct xfs_inode *, uint);
+int	libxfs_trans_ijoin_ref(struct xfs_trans *, struct xfs_inode *, int);
 void	libxfs_trans_log_inode (struct xfs_trans *, struct xfs_inode *,
 				uint);
 
 void	libxfs_trans_brelse(struct xfs_trans *, struct xfs_buf *);
 void	libxfs_trans_binval(struct xfs_trans *, struct xfs_buf *);
-void	libxfs_trans_bjoin(struct xfs_trans *, struct xfs_buf *);
+int	libxfs_trans_bjoin(struct xfs_trans *, struct xfs_buf *);
 void	libxfs_trans_bhold(struct xfs_trans *, struct xfs_buf *);
 void	libxfs_trans_log_buf(struct xfs_trans *, struct xfs_buf *,
 				uint, uint);

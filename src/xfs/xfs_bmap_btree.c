@@ -782,6 +782,8 @@ xfs_bmbt_init_cursor(
 	struct xfs_btree_cur	*cur;
 
 	cur = kmem_zone_zalloc(xfs_btree_cur_zone, KM_SLEEP);
+    if (cur == NULL) 
+        return NULL;
 
 	cur->bc_tp = tp;
 	cur->bc_mp = mp;

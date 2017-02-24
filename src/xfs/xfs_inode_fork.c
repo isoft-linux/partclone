@@ -191,6 +191,8 @@ xfs_iformat_fork(
 
 	ASSERT(ip->i_afp == NULL);
 	ip->i_afp = kmem_zone_zalloc(xfs_ifork_zone, KM_SLEEP | KM_NOFS);
+	if (ip->i_afp == NULL)
+        return -1;
 
 	switch (dip->di_aformat) {
 	case XFS_DINODE_FMT_LOCAL:
@@ -271,6 +273,8 @@ xfs_iformat_local(
 	else {
 		real_size = roundup(size, 4);
 		ifp->if_u1.if_data = kmem_alloc(real_size, KM_SLEEP | KM_NOFS);
+		if (ifp->if_u1.if_data == NULL)
+            return -1;
 	}
 	ifp->if_bytes = size;
 	ifp->if_real_bytes = real_size;
@@ -398,7 +402,8 @@ xfs_iformat_btree(
 
 	ifp->if_broot_bytes = size;
 	ifp->if_broot = kmem_alloc(size, KM_SLEEP | KM_NOFS);
-	ASSERT(ifp->if_broot != NULL);
+	if (ifp->if_broot == NULL);
+        return -1;
 	/*
 	 * Copy and convert from the on-disk structure
 	 * to the in-memory structure.
@@ -499,6 +504,8 @@ xfs_iroot_realloc(
 		if (ifp->if_broot_bytes == 0) {
 			new_size = XFS_BMAP_BROOT_SPACE_CALC(mp, rec_diff);
 			ifp->if_broot = kmem_alloc(new_size, KM_SLEEP | KM_NOFS);
+            if (ifp->if_broot == NULL)
+                return;
 			ifp->if_broot_bytes = (int)new_size;
 			return;
 		}
@@ -515,6 +522,8 @@ xfs_iroot_realloc(
 		ifp->if_broot = kmem_realloc(ifp->if_broot, new_size,
 				XFS_BMAP_BROOT_SPACE_CALC(mp, cur_max),
 				KM_SLEEP | KM_NOFS);
+		if (ifp->if_broot == NULL )
+            return ;
 		op = (char *)XFS_BMAP_BROOT_PTR_ADDR(mp, ifp->if_broot, 1,
 						     ifp->if_broot_bytes);
 		np = (char *)XFS_BMAP_BROOT_PTR_ADDR(mp, ifp->if_broot, 1,
@@ -541,6 +550,8 @@ xfs_iroot_realloc(
 		new_size = 0;
 	if (new_size > 0) {
 		new_broot = kmem_alloc(new_size, KM_SLEEP | KM_NOFS);
+        if (new_broot == NULL)
+            return ;
 		/*
 		 * First copy over the btree block header.
 		 */
@@ -649,6 +660,8 @@ xfs_idata_realloc(
 			ASSERT(ifp->if_real_bytes == 0);
 			ifp->if_u1.if_data = kmem_alloc(real_size,
 							KM_SLEEP | KM_NOFS);
+            if (ifp->if_u1.if_data == NULL) 
+                return ;
 		} else if (ifp->if_u1.if_data != ifp->if_u2.if_inline_data) {
 			/*
 			 * Only do the realloc if the underlying size
@@ -660,11 +673,15 @@ xfs_idata_realloc(
 							real_size,
 							ifp->if_real_bytes,
 							KM_SLEEP | KM_NOFS);
+				if (ifp->if_u1.if_data == NULL)
+                    return;
 			}
 		} else {
 			ASSERT(ifp->if_real_bytes == 0);
 			ifp->if_u1.if_data = kmem_alloc(real_size,
 							KM_SLEEP | KM_NOFS);
+            if (ifp->if_u1.if_data == NULL) 
+                return;
 			memcpy(ifp->if_u1.if_data, ifp->if_u2.if_inline_data,
 				ifp->if_bytes);
 		}
@@ -1074,6 +1091,8 @@ xfs_iext_add_indirect_multi(
 	if (nex2) {
 		byte_diff = nex2 * sizeof(xfs_bmbt_rec_t);
 		nex2_ep = (xfs_bmbt_rec_t *) kmem_alloc(byte_diff, KM_NOFS);
+        if (nex2_ep == NULL) 
+            return;
 		memmove(nex2_ep, &erp->er_extbuf[idx], byte_diff);
 		erp->er_extcount -= nex2;
 		xfs_iext_irec_update_extoffs(ifp, erp_idx + 1, -nex2);
@@ -1376,6 +1395,8 @@ xfs_iext_realloc_direct(
 				kmem_realloc(ifp->if_u1.if_extents,
 						rnew_size,
 						ifp->if_real_bytes, KM_NOFS);
+			if (ifp->if_u1.if_extents == NULL)
+                return ;
 		}
 		if (rnew_size > ifp->if_real_bytes) {
 			memset(&ifp->if_u1.if_extents[ifp->if_bytes /
@@ -1430,6 +1451,8 @@ xfs_iext_inline_to_direct(
 	int		new_size)	/* number of extents in file */
 {
 	ifp->if_u1.if_extents = kmem_alloc(new_size, KM_NOFS);
+	if (ifp->if_u1.if_extents == NULL)
+        return;
 	memset(ifp->if_u1.if_extents, 0, new_size);
 	if (ifp->if_bytes) {
 		memcpy(ifp->if_u1.if_extents, ifp->if_u2.if_inline_ext,
@@ -1462,6 +1485,8 @@ xfs_iext_realloc_indirect(
 		ifp->if_u1.if_ext_irec = (xfs_ext_irec_t *)
 			kmem_realloc(ifp->if_u1.if_ext_irec,
 				new_size, size, KM_NOFS);
+		if (ifp->if_u1.if_ext_irec == NULL)
+            return;
 	}
 }
 
@@ -1706,9 +1731,13 @@ xfs_iext_irec_init(
 	ASSERT(nextents <= XFS_LINEAR_EXTS);
 
 	erp = kmem_alloc(sizeof(xfs_ext_irec_t), KM_NOFS);
+    if (erp == NULL)
+        return;
 
 	if (nextents == 0) {
 		ifp->if_u1.if_extents = kmem_alloc(XFS_IEXT_BUFSZ, KM_NOFS);
+		if (ifp->if_u1.if_extents == NULL)
+            return;
 	} else if (!ifp->if_real_bytes) {
 		xfs_iext_inline_to_direct(ifp, XFS_IEXT_BUFSZ);
 	} else if (ifp->if_real_bytes < XFS_IEXT_BUFSZ) {
@@ -1757,6 +1786,8 @@ xfs_iext_irec_new(
 	/* Initialize new extent record */
 	erp = ifp->if_u1.if_ext_irec;
 	erp[erp_idx].er_extbuf = kmem_alloc(XFS_IEXT_BUFSZ, KM_NOFS);
+	if (erp[erp_idx].er_extbuf == NULL)
+        return NULL;
 	ifp->if_real_bytes = nlists * XFS_IEXT_BUFSZ;
 	memset(erp[erp_idx].er_extbuf, 0, XFS_IEXT_BUFSZ);
 	erp[erp_idx].er_extcount = 0;

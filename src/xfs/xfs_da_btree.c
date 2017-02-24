@@ -2033,6 +2033,8 @@ xfs_da_grow_inode_int(
 		 * try without the CONTIG flag.  Loop until we get it all.
 		 */
 		mapp = kmem_alloc(sizeof(*mapp) * count, KM_SLEEP);
+        if (mapp == NULL)
+            return -1;
 		for (b = *bno, mapi = 0; b < *bno + count; ) {
 			nmap = MIN(XFS_BMAP_MAX_NMAP, count);
 			c = (int)(*bno + count - b);
