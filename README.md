@@ -12,8 +12,8 @@ C/C++ wrapper for partclone.
 ├── fail-mbr
 ├── HACKING <-- TODO: code review by analyzer and sanitizer
 ├── lib <-- TODO: C/C++ wrapper
-│   ├── partclone.c
-│   └── partclone.h
+│   ├── libpartclone.c
+│   └── libpartclone.h
 ├── partclone-0.3.5.pc.in <-- TODO: pkgconfig
 ├── src <-- TODO: plugin - change exit to return
 │   ├── bitmap.h
@@ -102,7 +102,7 @@ Please read [INSTALL](https://github.com/isoft-linux/partclone/blob/libpartclone
 ├── /usr/lib/libpartclone.so <-- TODO: C/C++ wrapper
 ├── /usr/lib/pkgconfig/partclone-0.3.5.pc <-- TODO: C/C++ wrapper
 ├── /usr/include/partclone-0.3.5
-│   └── partclone.h <-- TODO: C/C++ wrapper
+│   └── libpartclone.h <-- TODO: C/C++ wrapper
 ```
 
 

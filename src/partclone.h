@@ -254,9 +254,9 @@ typedef image_options_v2    image_options;
 
 extern image_options img_opt;
 
-extern void usage(void);
-extern void print_version(void);
-extern void parse_options(int argc, char **argv, cmd_opt* opt);
+extern int usage(void);
+extern int print_version(void);
+extern int parse_options(int argc, char **argv, cmd_opt* opt);
 
 /** 
  * Ncurses Text User Interface
@@ -273,7 +273,7 @@ extern void close_ncurses();
  *		- write log and exit 
  *		- write to stderr...
  */
-extern void open_log(char* source);
+extern int open_log(char* source);
 extern void log_mesg(int lerrno, int lexit, int only_debug, int debug, const char *fmt, ...);
 extern void close_log();
 extern int io_all(int *fd, char *buffer, unsigned long long count, int do_write, cmd_opt *opt);

@@ -19,10 +19,6 @@ if ENABLE_REISERFS
 TESTS += reiserfs.test
 endif
 
-#if ENABLE_REISER4
-#TESTS += reiser4.test
-#endif
-
 if ENABLE_HFSP
 TESTS += hfsplus.test
 endif
@@ -42,14 +38,6 @@ endif
 if ENABLE_NTFS
 TESTS += ntfs.test
 endif
-
-#if ENABLE_UFS
-#TESTS += ufs.test
-#endif
-
-#if ENABLE_VMFS
-#TESTS += vmfs.test
-#endif
 
 if ENABLE_JFS
 TESTS += jfs.test
@@ -73,20 +61,24 @@ endif
 endif
 CLEANFILES = floppy*
 
+LIBPARTCLONE_CFLAGS = -I../lib
+
 noinst_PROGRAMS = test-libpartclone-extfs	\
 				  test-libpartclone-ntfs	\
 				  $(NULL)
 
 test_libpartclone_extfs_SOURCES = test-libpartclone-extfs.c	\
 								  $(NULL)
-test_libpartclone_extfs_CFLAGS = -DLIBDIR=\""$(libdir)"\"	\
+test_libpartclone_extfs_CFLAGS = -DPLUGINDIR=\""$(plugindir)"\"	\
+								 ${LIBPARTCLONE_CFLAGS}	\
 								 $(NULL)
 test_libpartclone_extfs_LDADD = ${DL_LIBS}	\
 								$(NULL)
 
 test_libpartclone_ntfs_SOURCES = test-libpartclone-ntfs.c	\
 								 $(NULL)
-test_libpartclone_ntfs_CFLAGS = -DLIBDIR=\""$(libdir)"\"   \
+test_libpartclone_ntfs_CFLAGS = -DPLUGINDIR=\""$(plugindir)"\"   \
+								${LIBPARTCLONE_CFLAGS}	\
 								$(NULL)
 test_libpartclone_ntfs_LDADD = ${DL_LIBS}  \
 							   $(NULL)

@@ -9,14 +9,22 @@
 
 #include <dlfcn.h>
 
-#include "partclone.h"
+#include "libpartclone.h"
 
-int partClone(partType type, char *part, char *img) 
+int partClone(partType type, 
+              char *part, 
+              char *img, 
+              callback_routine fptr, 
+              void *arg) 
 {
     return 0;
 }
 
-int partRestore(partType type, char *img, char *part) 
+int partRestore(partType type, 
+                char *img, 
+                char *part, 
+                callback_routine fptr, 
+                void *arg) 
 {
     return 0;
 }

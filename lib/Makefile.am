@@ -1,9 +1,9 @@
 partcloneincludedir = $(includedir)/partclone-0.3.5
-partcloneinclude_HEADERS = partclone.h	\
+partcloneinclude_HEADERS = libpartclone.h	\
 						   $(NULL)
 
 lib_LTLIBRARIES = libpartclone.la
-libpartclone_la_SOURCES = partclone.c	\
+libpartclone_la_SOURCES = libpartclone.c	\
 					      $(NULL)
 libpartclone_la_CFLAGS = -DLIBDIR=\""$(libdir)"\"	\
 					     $(NULL)
