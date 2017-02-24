@@ -39,6 +39,8 @@ if ENABLE_NCURSESW
 AM_CFLAGS+=-I/usr/include/ncursesw
 endif
 
+LIBPARTCLONE_CFLAGS=-I../lib
+
 version.h: FORCE
 	$(TOOLBOX) --update-version
 
@@ -48,25 +50,25 @@ libpartclone_info_la_SOURCES=info.c partclone.c checksum.c partclone.h fs_common
 libpartclone_info_la_LDFLAGS=-avoid-version
 
 libpartclone_restore_la_SOURCES=$(main_files) ddclone.c ddclone.h
-libpartclone_restore_la_CFLAGS=-DRESTORE -DDD
+libpartclone_restore_la_CFLAGS=-DRESTORE -DDD ${LIBPARTCLONE_CFLAGS}
 libpartclone_restore_la_LDFLAGS=-avoid-version
 
 libpartclone_chkimg_la_SOURCES=$(main_files) ddclone.c ddclone.h
-libpartclone_chkimg_la_CFLAGS=-DCHKIMG -DDD
+libpartclone_chkimg_la_CFLAGS=-DCHKIMG -DDD ${LIBPARTCLONE_CFLAGS}
 libpartclone_chkimg_la_LDFLAGS=-avoid-version
 
 libpartclone_dd_la_SOURCES=$(main_files) ddclone.c ddclone.h
-libpartclone_dd_la_CFLAGS=-DDD
+libpartclone_dd_la_CFLAGS=-DDD ${LIBPARTCLONE_CFLAGS}
 libpartclone_dd_la_LDFLAGS=-avoid-version
 
 libpartclone_imager_la_SOURCES=$(main_files) ddclone.c ddclone.h
-libpartclone_imager_la_CFLAGS=-DIMG
+libpartclone_imager_la_CFLAGS=-DIMG ${LIBPARTCLONE_CFLAGS}
 libpartclone_imager_la_LDFLAGS=-avoid-version
 
 if ENABLE_EXTFS
 plugin_LTLIBRARIES += libpartclone.extfs.la
 libpartclone_extfs_la_SOURCES=$(main_files) extfsclone.c extfsclone.h
-libpartclone_extfs_la_CFLAGS=-DEXTFS
+libpartclone_extfs_la_CFLAGS=-DEXTFS ${LIBPARTCLONE_CFLAGS}
 libpartclone_extfs_la_LIBADD=-lext2fs -lcom_err -lpthread
 libpartclone_extfs_la_LDFLAGS=-avoid-version
 endif
@@ -74,7 +76,7 @@ endif
 if ENABLE_REISERFS
 plugin_LTLIBRARIES += libpartclone.reiserfs.la
 libpartclone_reiserfs_la_SOURCES=$(main_files) reiserfsclone.c reiserfsclone.h
-libpartclone_reiserfs_la_CFLAGS=-DREISERFS
+libpartclone_reiserfs_la_CFLAGS=-DREISERFS ${LIBPARTCLONE_CFLAGS}
 libpartclone_reiserfs_la_LIBADD=-lreiserfs -ldal
 libpartclone_reiserfs_la_LDFLAGS=-avoid-version
 endif
@@ -82,7 +84,7 @@ endif
 if ENABLE_REISER4
 plugin_LTLIBRARIES += libpartclone.reiser4.la
 libpartclone_reiser4_la_SOURCES=$(main_files) reiser4clone.c reiser4clone.h
-libpartclone_reiser4_la_CFLAGS=-DREISER4
+libpartclone_reiser4_la_CFLAGS=-DREISER4 ${LIBPARTCLONE_CFLAGS}
 libpartclone_reiser4_la_LIBADD=-lreiser4 -laal
 libpartclone_reiser4_la_LDFLAGS=-avoid-version
 endif
@@ -90,14 +92,14 @@ endif
 if ENABLE_HFSP
 plugin_LTLIBRARIES += libpartclone.hfsp.la
 libpartclone_hfsp_la_SOURCES=$(main_files) hfsplusclone.c hfsplusclone.h
-libpartclone_hfsp_la_CFLAGS=-DHFSPLUS
+libpartclone_hfsp_la_CFLAGS=-DHFSPLUS ${LIBPARTCLONE_CFLAGS}
 libpartclone_hfsp_la_LDFLAGS=-avoid-version
 endif
 
 if ENABLE_XFS
 plugin_LTLIBRARIES += libpartclone.xfs.la
 libpartclone_xfs_la_SOURCES=$(main_files) xfsclone.c xfsclone.h $(XFS_SOURCE)
-libpartclone_xfs_la_CFLAGS=-DXFS -D_GNU_SOURCE -DNDEBUG $(UUID_CFLAGS) 
+libpartclone_xfs_la_CFLAGS=-DXFS -D_GNU_SOURCE -DNDEBUG $(UUID_CFLAGS) ${LIBPARTCLONE_CFLAGS}
 libpartclone_xfs_la_LIBADD=-lrt -lpthread -luuid
 libpartclone_xfs_la_LDFLAGS=-avoid-version
 endif
@@ -105,14 +107,14 @@ endif
 if ENABLE_EXFAT
 plugin_LTLIBRARIES += libpartclone.exfat.la
 libpartclone_exfat_la_SOURCES=$(main_files) exfatclone.c exfatclone.h $(EXFATFS_SOURCE)
-libpartclone_exfat_la_CFLAGS=-DEXFAT -D_GNU_SOURCE -std=c99
+libpartclone_exfat_la_CFLAGS=-DEXFAT -D_GNU_SOURCE -std=c99 ${LIBPARTCLONE_CFLAGS}
 libpartclone_exfat_la_LDFLAGS=-avoid-version
 endif
 
 if ENABLE_F2FS
 plugin_LTLIBRARIES += libpartclone.f2fs.la
 libpartclone_f2fs_la_SOURCES=$(main_files) f2fsclone.c f2fsclone.h $(F2FS_SOURCE)
-libpartclone_f2fs_la_CFLAGS=-DF2FS
+libpartclone_f2fs_la_CFLAGS=-DF2FS ${LIBPARTCLONE_CFLAGS}
 libpartclone_f2fs_la_LIBADD=-luuid
 libpartclone_f2fs_la_LDFLAGS=-avoid-version
 endif
@@ -120,7 +122,7 @@ endif
 if ENABLE_NILFS2
 plugin_LTLIBRARIES += libpartclone.nilfs2.la
 libpartclone_nilfs2_la_SOURCES=$(main_files) nilfsclone.c nilfsclone.h
-libpartclone_nilfs2_la_CFLAGS=-DNILFS
+libpartclone_nilfs2_la_CFLAGS=-DNILFS ${LIBPARTCLONE_CFLAGS}
 libpartclone_nilfs2_la_LIBADD=-lnilfs
 libpartclone_nilfs2_la_LDFLAGS=-avoid-version
 endif
@@ -128,7 +130,7 @@ endif
 if ENABLE_FAT
 plugin_LTLIBRARIES += libpartclone.fat.la
 libpartclone_fat_la_SOURCES=$(main_files) fatclone.c fatclone.h
-libpartclone_fat_la_CFLAGS=-DFAT
+libpartclone_fat_la_CFLAGS=-DFAT ${LIBPARTCLONE_CFLAGS}
 libpartclone_fat_la_LDFLAGS=-avoid-version
 endif
 
@@ -139,10 +141,10 @@ if ENABLE_NTFS
 plugin_LTLIBRARIES += libpartclone.ntfs.la
 libpartclone_ntfs_la_SOURCES=$(main_files) ntfsclone-ng.c ntfsclone-ng.h
 if ENABLE_NTFS_3G
-libpartclone_ntfs_la_CFLAGS=-DNTFS3G
+libpartclone_ntfs_la_CFLAGS=-DNTFS3G ${LIBPARTCLONE_CFLAGS}
 libpartclone_ntfs_la_LIBADD=-lntfs-3g
 else
-libpartclone_ntfs_la_CFLAGS=-DNTFS
+libpartclone_ntfs_la_CFLAGS=-DNTFS ${LIBPARTCLONE_CFLAGS}
 libpartclone_ntfs_la_LIBADD=-lntfs
 endif
 libpartclone_ntfs_la_LDFLAGS=-avoid-version
@@ -151,7 +153,7 @@ endif
 if ENABLE_UFS
 plugin_LTLIBRARIES += libpartclone.ufs.la
 libpartclone_ufs_la_SOURCES=$(main_files) ufsclone.c ufsclone.h
-libpartclone_ufs_la_CFLAGS=-DUFS -D_GNU_SOURCE
+libpartclone_ufs_la_CFLAGS=-DUFS -D_GNU_SOURCE ${LIBPARTCLONE_CFLAGS}
 libpartclone_ufs_la_LIBADD=-lufs -lbsd
 libpartclone_ufs_la_LDFLAGS=-avoid-version
 endif
@@ -159,19 +161,19 @@ endif
 if ENABLE_VMFS
 plugin_LTLIBRARIES += libpartclone.vmfs.la
 libpartclone_vmfs_la_SOURCES=$(main_files) vmfsclone.c vmfsclone.h
-libpartclone_vmfs_la_CFLAGS=-DVMFS -D_GNU_SOURCE $(UUID_CFLAGS)
+libpartclone_vmfs_la_CFLAGS=-DVMFS -D_GNU_SOURCE $(UUID_CFLAGS) ${LIBPARTCLONE_CFLAGS}
 libpartclone_vmfs_la_LIBADD=-lvmfs -luuid
 libpartclone_vmfs_la_LDFLAGS=-avoid-version
 
 plugin_LTLIBRARIES += libpartclone.vmfs5.la
 libpartclone_vmfs5_la_SOURCES=$(main_files) vmfs5clone.c vmfsclone.h
-libpartclone_vmfs5_la_CFLAGS=-DVMFS -D_GNU_SOURCE $(UUID_CFLAGS)
+libpartclone_vmfs5_la_CFLAGS=-DVMFS -D_GNU_SOURCE $(UUID_CFLAGS) ${LIBPARTCLONE_CFLAGS}
 libpartclone_vmfs5_la_LIBADD=-lvmfs -luuid
 libpartclone_vmfs5_la_LDFLAGS=-avoid-version
 
 plugin_LTLIBRARIES += libpartclone.fstype.la
 libpartclone_fstype_la_SOURCES=fstype.c
-libpartclone_fstype_la_CFLAGS=-DVMFS -D_GNU_SOURCE $(UUID_CFLAGS)
+libpartclone_fstype_la_CFLAGS=-DVMFS -D_GNU_SOURCE $(UUID_CFLAGS) ${LIBPARTCLONE_CFLAGS}
 libpartclone_fstype_la_LIBADD=-lvmfs -luuid
 libpartclone_fstype_la_LDFLAGS=-avoid-version
 
@@ -180,7 +182,7 @@ endif
 if ENABLE_JFS
 plugin_LTLIBRARIES += libpartclone.jfs.la
 libpartclone_jfs_la_SOURCES=$(main_files) jfsclone.c jfsclone.h
-libpartclone_jfs_la_CFLAGS=-DJFS
+libpartclone_jfs_la_CFLAGS=-DJFS ${LIBPARTCLONE_CFLAGS}
 libpartclone_jfs_la_LIBADD=-luuid -ljfs
 libpartclone_jfs_la_LDFLAGS=-avoid-version
 endif
@@ -188,7 +190,7 @@ endif
 if ENABLE_BTRFS
 plugin_LTLIBRARIES += libpartclone.btrfs.la
 libpartclone_btrfs_la_SOURCES=$(main_files) btrfsclone.c btrfsclone.h $(BTRFS_SOURCE)
-libpartclone_btrfs_la_CFLAGS=-DBTRFS -DBTRFS_FLAT_INCLUDES -D_XOPEN_SOURCE=700 -D_GNU_SOURCE
+libpartclone_btrfs_la_CFLAGS=-DBTRFS -DBTRFS_FLAT_INCLUDES -D_XOPEN_SOURCE=700 -D_GNU_SOURCE ${LIBPARTCLONE_CFLAGS}
 libpartclone_btrfs_la_LIBADD=-luuid -lblkid
 libpartclone_btrfs_la_LDFLAGS=-avoid-version
 endif
@@ -196,13 +198,13 @@ endif
 if ENABLE_MINIX
 plugin_LTLIBRARIES += libpartclone.minix.la
 libpartclone_minix_la_SOURCES=$(main_files) minixclone.c minixclone.h
-libpartclone_minix_la_CFLAGS=-DMINIX
+libpartclone_minix_la_CFLAGS=-DMINIX ${LIBPARTCLONE_CFLAGS}
 libpartclone_minix_la_LDFLAGS=-avoid-version
 endif
 
 if ENABLE_FUSE
 libpartclone_imgfuse_la_SOURCES=fuseimg.c partclone.c checksum.c partclone.h fs_common.h checksum.h
-libpartclone_imgfuse_la_CFLAGS=-lfuse
+libpartclone_imgfuse_la_CFLAGS=-lfuse ${LIBPARTCLONE_CFLAGS}
 libpartclone_imgfuse_la_LDFLAGS=-avoid-version
 
 libpartclone_block_la_SOURCES=readblock.c partclone.c checksum.c partclone.h fs_common.h checksum.h

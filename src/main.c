@@ -52,11 +52,13 @@ cmd_opt opt;
 /// cmd_opt structure defined in partclone.h
 fs_cmd_opt fs_opt;
 
+#include "libpartclone.h"
+
 /**
  * main function - for clone or restore data
  */
 #ifdef LIBPARTCLONE
-int libpartclone_main(int argc, char **argv) 
+int libpartclone_main(int argc, char **argv, callback_routine fptr, void *arg) 
 {
 #else
 int main(int argc, char **argv) {
@@ -67,7 +69,7 @@ int main(int argc, char **argv) {
 #endif
 	char*			source;			/// source data
 	char*			target;			/// target data
-	int			dfr, dfw;		/// file descriptor for source and target
+	int			dfr = -1, dfw = -1;		/// file descriptor for source and target
 	int			r_size, w_size;		/// read and write size
 	unsigned		cs_size = 0;		/// checksum_size
 	int			cs_reseed = 1;
@@ -101,7 +103,8 @@ int main(int argc, char **argv) {
 	 * get option and assign to opt structure
 	 * check parameter and read from argv
 	 */
-	parse_options(argc, argv, &opt);
+	if (parse_options(argc, argv, &opt) == -1)
+        goto cleanup;
 
 	/**
 	 * if "-d / --debug" given
@@ -969,13 +972,14 @@ int main(int argc, char **argv) {
 #endif
 	print_finish_info(opt);
 
+cleanup:
 	/// close source
-	close(dfr);
+	if (dfr != -1) close(dfr);
 	/// close target
 	if (dfw != -1)
 		close(dfw);
 	/// free bitmp
-	free(bitmap);
+	if (bitmap) free(bitmap); bitmap = NULL;
 	close_pui(pui);
 #ifndef CHKIMG
 	fprintf(stderr, "Cloned successfully.\n");
@@ -987,6 +991,11 @@ int main(int argc, char **argv) {
 #ifdef MEMTRACE
 	muntrace();
 #endif
+
+#ifdef LIBPARTCLONE
+    if (fptr) fptr(arg);
+#endif
+
 	return 0;      /// finish
 }
 

@@ -10,33 +10,48 @@
 #include <stdio.h>
 #include <dlfcn.h>
 
-typedef int (*fptr_libpartclone_main)(int argc, char **argv);
+#include "libpartclone.h"
+
+typedef int (*fptr_libpartclone_main)(int argc, 
+                                      char **argv, 
+                                      callback_routine fptr, 
+                                      void *arg);
+
+static void *callback(void *arg) 
+{
+    printf("DEBUG: %s, %s, line %d\n", __FILE__, __func__, __LINE__);
+    return NULL;
+}
 
 int main(int argc, char *argv[]) 
 {
     void *dp = NULL;
     char *err = NULL;
 
-    dp = dlopen(LIBDIR "/libpartclone.extfs.so", RTLD_NOW);
+    dp = dlopen(PLUGINDIR "/libpartclone.extfs.so", RTLD_NOW);
     if (dp == NULL) {
         printf("ERROR: %s\n", dlerror());
         goto cleanup;
     }
 
-    fptr_libpartclone_main libpartclone_main = (fptr_libpartclone_main)dlsym(dp, "libpartclone_main");
+    fptr_libpartclone_main libpartclone_main = 
+        (fptr_libpartclone_main)dlsym(dp, "libpartclone_main");
     err = dlerror();
     if (err) {
         printf("ERROR: %s\n", err);
         goto cleanup;
     }
 
-    libpartclone_main(argc, argv);
+    libpartclone_main(argc, argv, callback, NULL);
 
 cleanup:
     if (dp) {
         dlclose(dp);
         dp = NULL;
     }
+
+    printf("DEBUG: %s, %s, line %d: Bye ;-)\n", 
+            __FILE__, __func__, __LINE__);
 
     return 0;
 }
