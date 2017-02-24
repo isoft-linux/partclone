@@ -6,7 +6,7 @@ C/C++ wrapper for partclone.
 ## Build && Install
 
 ```
-git checkout [libpartclone](https://github.com/isoft-linux/partclone/tree/libpartclone)
+git checkout libpartclone
 
 libtoolize --force --copy
 aclocal -I m4
