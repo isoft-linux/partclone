@@ -23,7 +23,7 @@ fail-mbr/fail-mbr.image
 *.plist
 clang_output_*
 *.exec
-src/.libs
+.libs
 src/partclone.block
 src/partclone.imgfuse
 src/partclone.btrfs
