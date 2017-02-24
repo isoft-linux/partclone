@@ -4,5 +4,4 @@
  * OFFICIAL PARTCLONE RELEASES.
  */
 #define git_version  "ca083ae004095d31f60e2c907c7df29cf255836a"
->>>>>>> 1e9d4113fd6d7764902c00739c2171d29958cfde
 
