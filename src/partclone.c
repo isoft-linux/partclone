@@ -370,7 +370,7 @@ int parse_options(int argc, char **argv, cmd_opt* opt) {
 
     save_program_name(argv[0]);
 
-    int ret = -1;
+    int ret = 0;
 	int c;
 	int mode = 0;
 	memset(opt, 0, sizeof(cmd_opt));
@@ -877,8 +877,7 @@ void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char
 }
 
 void close_log(void) {
-	fclose(msg);
-        msg = NULL;
+	if (msg) fclose(msg); msg = NULL;
 }
 
 void load_image_desc_v1(file_system_info* fs_info, image_options* img_opt,

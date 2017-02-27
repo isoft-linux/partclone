@@ -65,6 +65,7 @@ LIBPARTCLONE_CFLAGS = -I../lib
 
 noinst_PROGRAMS = test-libpartclone-extfs	\
 				  test-libpartclone-ntfs	\
+				  test-libpartclone-info	\
 				  $(NULL)
 
 test_libpartclone_extfs_SOURCES = test-libpartclone-extfs.c	\
@@ -81,4 +82,12 @@ test_libpartclone_ntfs_CFLAGS = -DPLUGINDIR=\""$(plugindir)"\"   \
 								${LIBPARTCLONE_CFLAGS}	\
 								$(NULL)
 test_libpartclone_ntfs_LDADD = ${DL_LIBS}  \
+							   $(NULL)
+
+test_libpartclone_info_SOURCES = test-libpartclone-info.c	\
+								 $(NULL)
+test_libpartclone_info_CFLAGS = -DPLUGINDIR=\""$(plugindir)"\"   \
+								${LIBPARTCLONE_CFLAGS}  \
+								$(NULL)
+test_libpartclone_info_LDADD = ${DL_LIBS}  \
 							   $(NULL)

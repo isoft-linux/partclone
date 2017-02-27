@@ -24,6 +24,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "libpartclone.h"
 #include "partclone.h"
 
 /// cmd_opt structure defined in partclone.h
@@ -62,7 +63,7 @@ void info_options (int argc, char **argv){
 	opt.debug = 0;
 	opt.quiet = 0;
 	opt.info  = 1;
-	opt.logfile = "/var/log/partclone.log";
+	opt.logfile = "/tmp/partclone.log";
 	opt.target  = 0;
 	opt.clone   = 0;
 	opt.restore = 0;
@@ -107,8 +108,13 @@ void info_options (int argc, char **argv){
 /**
  * main functiom - print Image file metadata.
  */
-int main(int argc, char **argv){ 
-
+#ifdef LIBPARTCLONE
+int libpartclone_main(int argc, char **argv, callback_routine fptr, void *arg) 
+{
+#else
+int main(int argc, char **argv) 
+{
+#endif
 	int dfr;                  /// file descriptor for source and target
 	unsigned long   *bitmap;  /// the point for bitmap data
 	image_head_v2    img_head;
@@ -118,7 +124,7 @@ int main(int argc, char **argv){
     if (argc == 2){
 	memset(&opt, 0, sizeof(cmd_opt));
 	opt.source  = argv[1];
-	opt.logfile = "/var/log/partclone.log";
+	opt.logfile = "/tmp/partclone.log";
 	dfr = open(opt.source, O_RDONLY);
 	if (dfr == -1)
 	    info_options(argc, argv);

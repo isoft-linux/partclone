@@ -61,7 +61,8 @@ fs_cmd_opt fs_opt;
 int libpartclone_main(int argc, char **argv, callback_routine fptr, void *arg) 
 {
 #else
-int main(int argc, char **argv) {
+int main(int argc, char **argv) 
+{
 #endif
 #ifdef MEMTRACE
 	setenv("MALLOC_TRACE", "partclone_mtrace.log", 1);
