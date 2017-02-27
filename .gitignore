@@ -52,6 +52,7 @@ src/partclone.nilfs2
 src/version.h
 tests/test-libpartclone-extfs
 tests/test-libpartclone-ntfs
+tests/test-libpartclone-info
 stamp-h1
 *.m4
 ltmain.sh
