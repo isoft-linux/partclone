@@ -370,7 +370,7 @@ int parse_options(int argc, char **argv, cmd_opt* opt) {
 
     save_program_name(argv[0]);
 
-    int ret = -1;
+    int ret = 0;
 	int c;
 	int mode = 0;
 	memset(opt, 0, sizeof(cmd_opt));
