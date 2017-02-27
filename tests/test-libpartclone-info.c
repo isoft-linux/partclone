@@ -50,5 +50,7 @@ cleanup:
         dp = NULL;
     }
 
+    printf("DEBUG: %s, %s, line %d: Bye ;-)\n", __FILE__, __func__, __LINE__);
+
     return 0;
 }

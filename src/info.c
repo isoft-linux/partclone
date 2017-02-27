@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     /**
      * open Image file
      */
-    if (strcmp(opt.source, "-") == 0) {
+    if (opt.source && strcmp(opt.source, "-") == 0) {
 	if ((dfr = fileno(stdin)) == -1)
 	    log_mesg(0, 1, 1, opt.debug, "info: open %s(stdin) error\n", opt.source);
     } else {
