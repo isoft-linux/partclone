@@ -63,10 +63,19 @@ CLEANFILES = floppy*
 
 LIBPARTCLONE_CFLAGS = -I../lib
 
-noinst_PROGRAMS = test-libpartclone-extfs	\
+noinst_PROGRAMS = test-libpartclone	\
+				  test-libpartclone-extfs	\
 				  test-libpartclone-ntfs	\
 				  test-libpartclone-info	\
 				  $(NULL)
+
+test_libpartclone_SOURCES = test-libpartclone.c	\
+							$(NULL)
+test_libpartclone_CFLAGS = ${LIBPARTCLONE_CFLAGS} \
+						   $(NULL)
+test_libpartclone_LDADD = ${DL_LIBS}  \
+						  -lpartclone	\
+						  $(NULL)
 
 test_libpartclone_extfs_SOURCES = test-libpartclone-extfs.c	\
 								  $(NULL)
