@@ -25,6 +25,8 @@ static void *callback(void *arg)
 
 int main(int argc, char *argv[]) 
 {
+#if 0
+
     void *dp = NULL;
     char *err = NULL;
 
@@ -49,7 +51,14 @@ cleanup:
         dlclose(dp);
         dp = NULL;
     }
-
+#else
+    // use api
+    partClone(LIBPARTCLONE_EXTFS,
+                  "/dev/sda7",
+                  "/home/test/gits/test/sda7_2.img",
+                  callback,
+                  NULL);
+#endif
     printf("DEBUG: %s, %s, line %d: Bye ;-)\n", 
             __FILE__, __func__, __LINE__);
 

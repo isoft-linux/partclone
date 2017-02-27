@@ -8,8 +8,14 @@
  */
 
 #include <dlfcn.h>
+#include <stdio.h>
 
 #include "libpartclone.h"
+
+typedef int (*fptr_libpartclone_main)(int argc,
+                                      char **argv,
+                                      callback_routine fptr,
+                                      void *arg);
 
 int partClone(partType type, 
               char *part, 
@@ -17,6 +23,68 @@ int partClone(partType type,
               callback_routine fptr, 
               void *arg) 
 {
+    void *dp = NULL;
+    char *err = NULL;
+    int argc = 0;
+    char **argv = NULL;
+    switch (type) {
+    default:
+        break;
+    case LIBPARTCLONE_EXTFS:
+        dp = dlopen(PLUGINDIR "/libpartclone.extfs.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+
+        fptr_libpartclone_main libpartclone_main =
+            (fptr_libpartclone_main)dlsym(dp, "libpartclone_main");
+        err = dlerror();
+        if (err) {
+            printf("ERROR: %s\n", err);
+            goto cleanup;
+        }
+
+        // command[./test-libpartclone-extfs -d -c -s /dev/sda7 -o /home/test/gits/test/sda7.img]
+        // => argc argv
+        argc = 7;
+        argv = malloc((argc+1) * sizeof(char*));
+        argv[0] = strdup("partClone");
+        argv[1] = strdup("-d");
+        argv[2] = strdup("-c");
+        argv[3] = strdup("-s");
+        argv[4] = strdup(part);
+        argv[5] = strdup("-o");
+        argv[6] = strdup(img);
+        argv[7] = NULL; // argc + 1
+
+        for (int i = 0;i < argc; i++) {
+            printf("argv[%s]\n",argv[i]);
+        }
+
+        libpartclone_main(argc, argv, fptr, NULL);
+
+    cleanup:
+        if (dp) {
+            dlclose(dp);
+            dp = NULL;
+        }
+        if (argc > 0 && argv != NULL) {
+            for (int i = 0;i < argc; i++) {
+                free(argv[i]);
+                argv[i] = NULL;
+            }
+            free(argv);
+            argv = NULL;
+            argc = 0;
+        }
+
+        printf("DEBUG: %s, %s, line %d: Bye ;-)\n",
+                __FILE__, __func__, __LINE__);
+
+        break;
+    }
+
     return 0;
 }
 

@@ -145,6 +145,7 @@ static void fs_open(char* device){
     if (!ntfs) {
         err = errno;
         log_mesg(0, 1, 1, fs_opt.debug, "%s: NOT NTFS partition, ntfs mount error %i\n", __FILE__, err);
+        return ;
     } else {
         
         if(fs_opt.ignore_fschk){
@@ -229,6 +230,10 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
     int bit_size = 1;
 
     fs_open(device);
+    if (ntfs == NULL) {
+        log_mesg(0, 1, 1, fs_opt.debug, "%s: device open error!\n", __FILE__);
+        return;
+    }
     bitmap_size = (ntfs->nr_clusters + 7) / 8;
 
     if (bitmap_size > ntfs->lcnbmp_na->data_size) {
@@ -303,6 +308,10 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
 void read_super_blocks(char* device, file_system_info* fs_info)
 {
     fs_open(device);
+    if (ntfs == NULL) {
+        log_mesg(0, 1, 1, fs_opt.debug, "%s:device open error!\n", __FILE__);
+        return;
+    }
     strncpy(fs_info->fs, ntfs_MAGIC, FS_MAGIC_SIZE);
     fs_info->block_size  = ntfs->cluster_size;
     fs_info->totalblock  = ntfs->nr_clusters;

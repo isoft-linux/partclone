@@ -1509,7 +1509,7 @@ int open_target(char* target, cmd_opt* opt) {
 			log_mesg(0, 0, 1, debug, "device (%s) is mounted at %s\n", target, mp);
 			free(mp); mp = NULL;
 			log_mesg(0, 1, 1, debug, "error exit\n");
-            return -1;
+                        return -1;
 		}
 		if (mp) free(mp); mp = NULL;
 
