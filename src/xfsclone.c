@@ -304,6 +304,8 @@ static void fs_open(char* device)
     mp = libxfs_mount(&mbuf, sb, xargs.ddev, xargs.logdev, xargs.rtdev, 1);
     if (mp == NULL) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: %s filesystem failed to initialize\nAborting.\n", __FILE__, device);
+        // init error,mp is NULL
+        return;
     } else if (mp->m_sb.sb_inprogress)  {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: %s filesystem failed to initialize\nAborting(inprogress).\n", __FILE__, device);
     } else if (mp->m_sb.sb_logstart == 0)  {

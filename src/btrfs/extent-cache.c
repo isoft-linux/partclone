@@ -115,7 +115,7 @@ static int __add_cache_extent(struct cache_tree *tree,
 
 	if (!pe) {
 		fprintf(stderr, "memory allocation failed\n");
-		exit(1);
+		return -1;
 	}
 
 	ret = insert_cache_extent(tree, pe);

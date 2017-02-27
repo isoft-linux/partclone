@@ -439,7 +439,7 @@ struct btrfs_qgroup_comparer_set *btrfs_qgroup_alloc_comparer_set(void)
 	set = calloc(1, size);
 	if (!set) {
 		fprintf(stderr, "memory allocation failed\n");
-		exit(1);
+        return NULL;
 	}
 
 	set->total = BTRFS_QGROUP_NCOMPS_INCREASE;
@@ -474,7 +474,7 @@ int btrfs_qgroup_setup_comparer(struct btrfs_qgroup_comparer_set  **comp_set,
 		if (!set) {
 			fprintf(stderr, "memory allocation failed\n");
 			free(tmp);
-			exit(1);
+			return -1;
 		}
 
 		memset(&set->comps[set->total], 0,
@@ -617,7 +617,7 @@ static int update_qgroup(struct qgroup_lookup *qgroup_lookup, u64 qgroupid,
 		list = malloc(sizeof(*list));
 		if (!list) {
 			fprintf(stderr, "memory allocation failed\n");
-			exit(1);
+			return -1;
 		}
 		list->qgroup = pa;
 		list->member = child;
@@ -646,7 +646,7 @@ static int add_qgroup(struct qgroup_lookup *qgroup_lookup, u64 qgroupid,
 	bq = calloc(1, sizeof(*bq));
 	if (!bq) {
 		printf("memory allocation failed\n");
-		exit(1);
+		return -1;
 	}
 	if (qgroupid) {
 		bq->qgroupid = qgroupid;
@@ -675,7 +675,7 @@ static int add_qgroup(struct qgroup_lookup *qgroup_lookup, u64 qgroupid,
 		list = malloc(sizeof(*list));
 		if (!list) {
 			fprintf(stderr, "memory allocation failed\n");
-			exit(1);
+			return -1;
 		}
 		list->qgroup = parent;
 		list->member = child;
@@ -686,7 +686,7 @@ static int add_qgroup(struct qgroup_lookup *qgroup_lookup, u64 qgroupid,
 	if (ret) {
 		printf("failed to insert tree %llu\n",
 		       bq->qgroupid);
-		exit(1);
+		return -1;
 	}
 	return ret;
 }
@@ -814,7 +814,7 @@ struct btrfs_qgroup_filter_set *btrfs_qgroup_alloc_filter_set(void)
 	set = calloc(1, size);
 	if (!set) {
 		fprintf(stderr, "memory allocation failed\n");
-		exit(1);
+		return NULL;
 	}
 	set->total = BTRFS_QGROUP_NFILTERS_INCREASE;
 
@@ -847,7 +847,7 @@ int btrfs_qgroup_setup_filter(struct btrfs_qgroup_filter_set **filter_set,
 		if (!set) {
 			fprintf(stderr, "memory allocation failed\n");
 			free(tmp);
-			exit(1);
+			return -1;
 		}
 		memset(&set->filters[set->total], 0,
 		       BTRFS_QGROUP_NFILTERS_INCREASE *
@@ -1116,10 +1116,12 @@ static int __qgroups_search(int fd, struct qgroup_lookup *qgroup_lookup)
 				a5 =
 				  btrfs_stack_qgroup_info_exclusive_compressed
 				  (info);
-				add_qgroup(qgroup_lookup,
+				ret = add_qgroup(qgroup_lookup,
 					btrfs_search_header_offset(sh), a1,
 					a2, a3, a4, a5, 0, 0, 0, 0, 0, NULL,
 					NULL);
+                if (ret != 0)
+                    goto done;
 			} else if (btrfs_search_header_type(sh)
 				   == BTRFS_QGROUP_LIMIT_KEY) {
 				limit = (struct btrfs_qgroup_limit_item *)
@@ -1134,10 +1136,12 @@ static int __qgroups_search(int fd, struct qgroup_lookup *qgroup_lookup)
 				     (limit);
 				a5 = btrfs_stack_qgroup_limit_rsv_exclusive
 				     (limit);
-				add_qgroup(qgroup_lookup,
+				ret = add_qgroup(qgroup_lookup,
 					   btrfs_search_header_offset(sh), 0,
 					   0, 0, 0, 0, a1, a2, a3, a4, a5,
 					   NULL, NULL);
+                if (ret != 0)
+                    goto done;
 			} else if (btrfs_search_header_type(sh)
 				   == BTRFS_QGROUP_RELATION_KEY) {
 				if (btrfs_search_header_offset(sh)
@@ -1151,9 +1155,11 @@ static int __qgroups_search(int fd, struct qgroup_lookup *qgroup_lookup)
 					 btrfs_search_header_objectid(sh));
 				if (!bq1)
 					goto skip;
-				add_qgroup(qgroup_lookup,
+				ret = add_qgroup(qgroup_lookup,
 					   btrfs_search_header_offset(sh), 0,
 					   0, 0, 0, 0, 0, 0, 0, 0, 0, bq, bq1);
+                if (ret != 0)
+                    goto done;
 			} else
 				goto done;
 skip:
@@ -1283,7 +1289,8 @@ int btrfs_qgroup_parse_sort_string(char *opt_arg,
 			what_to_sort = btrfs_qgroup_get_sort_item(p);
 			if (what_to_sort < 0)
 				return -1;
-			btrfs_qgroup_setup_comparer(comps, what_to_sort, order);
+			if (btrfs_qgroup_setup_comparer(comps, what_to_sort, order) != 0)
+				return -1;
 		}
 		opt_arg = NULL;
 	}
@@ -1335,10 +1342,12 @@ qgroup_inherit_realloc(struct btrfs_qgroup_inherit **inherit, int n, int pos)
 
 int qgroup_inherit_add_group(struct btrfs_qgroup_inherit **inherit, char *arg)
 {
-	int ret;
-	u64 qgroupid = parse_qgroupid(arg);
+	int ret = 0;
+	u64 qgroupid = parse_qgroupid(arg,&ret);
 	int pos = 0;
 
+    if (ret != 0)
+        return ret;
 	if (qgroupid == 0) {
 		fprintf(stderr, "ERROR: bad qgroup specification\n");
 		return -EINVAL;
@@ -1371,8 +1380,12 @@ bad:
 		return -EINVAL;
 	}
 	*p = 0;
-	qgroup_src = parse_qgroupid(arg);
-	qgroup_dst = parse_qgroupid(p + 1);
+	qgroup_src = parse_qgroupid(arg,&ret);
+    if (ret != 0)
+        return ret;
+	qgroup_dst = parse_qgroupid(p + 1,&ret);
+    if (ret != 0)
+        return ret;
 	*p = ':';
 
 	if (!qgroup_src || !qgroup_dst)

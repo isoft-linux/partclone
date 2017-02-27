@@ -229,7 +229,7 @@ struct btrfs_list_comparer_set *btrfs_list_alloc_comparer_set(void)
 	set = calloc(1, size);
 	if (!set) {
 		fprintf(stderr, "memory allocation failed\n");
-		exit(1);
+		return NULL;
 	}
 
 	set->total = BTRFS_LIST_NCOMPS_INCREASE;
@@ -262,7 +262,7 @@ static int btrfs_list_setup_comparer(struct btrfs_list_comparer_set **comp_set,
 		if (!set) {
 			fprintf(stderr, "memory allocation failed\n");
 			free(tmp);
-			exit(1);
+			return -1;
 		}
 
 		memset(&set->comps[set->total], 0,
@@ -412,7 +412,7 @@ static int update_root(struct root_lookup *root_lookup,
 		ri->name = malloc(name_len + 1);
 		if (!ri->name) {
 			fprintf(stderr, "memory allocation failed\n");
-			exit(1);
+			return -1;
 		}
 		strncpy(ri->name, name, name_len);
 		ri->name[name_len] = 0;
@@ -476,7 +476,7 @@ static int add_root(struct root_lookup *root_lookup,
 	ri = calloc(1, sizeof(*ri));
 	if (!ri) {
 		printf("memory allocation failed\n");
-		exit(1);
+		return -1;
 	}
 	ri->root_id = root_id;
 
@@ -484,7 +484,7 @@ static int add_root(struct root_lookup *root_lookup,
 		ri->name = malloc(name_len + 1);
 		if (!ri->name) {
 			fprintf(stderr, "memory allocation failed\n");
-			exit(1);
+			return -1;
 		}
 		strncpy(ri->name, name, name_len);
 		ri->name[name_len] = 0;
@@ -518,7 +518,7 @@ static int add_root(struct root_lookup *root_lookup,
 	ret = root_tree_insert(root_lookup, ri);
 	if (ret) {
 		printf("failed to insert tree %llu\n", (unsigned long long)root_id);
-		exit(1);
+		return -1;
 	}
 	return 0;
 }
@@ -579,7 +579,7 @@ static int resolve_root(struct root_lookup *rl, struct root_info *ri,
 			tmp = malloc(add_len + 2 + len);
 			if (!tmp) {
 				perror("malloc failed");
-				exit(1);
+			    return -ENOENT;
 			}
 			memcpy(tmp + add_len + 1, full_path, len);
 			tmp[add_len] = '/';
@@ -662,7 +662,7 @@ static int lookup_ino_path(int fd, struct root_info *ri)
 		ri->path = malloc(strlen(ri->name) + strlen(args.name) + 1);
 		if (!ri->path) {
 			perror("malloc failed");
-			exit(1);
+			return -1;
 		}
 		strcpy(ri->path, args.name);
 		strcat(ri->path, ri->name);
@@ -671,7 +671,7 @@ static int lookup_ino_path(int fd, struct root_info *ri)
 		ri->path = strdup(ri->name);
 		if (!ri->path) {
 			perror("strdup failed");
-			exit(1);
+			return -1;
 		}
 	}
 	return 0;
@@ -1035,9 +1035,10 @@ static int __list_subvol_search(int fd, struct root_lookup *root_lookup)
 				name = (char *)(ref + 1);
 				dir_id = btrfs_stack_root_ref_dirid(ref);
 
-				add_root(root_lookup, sh.objectid, sh.offset,
+				if (add_root(root_lookup, sh.objectid, sh.offset,
 					 0, 0, dir_id, name, name_len, 0, 0, 0,
-					 NULL, NULL, NULL);
+					 NULL, NULL, NULL) != 0)
+                    return -1;
 			} else if (sh.type == BTRFS_ROOT_ITEM_KEY) {
 				ri = (struct btrfs_root_item *)(args.buf + off);
 				gen = btrfs_root_generation(ri);
@@ -1057,9 +1058,10 @@ static int __list_subvol_search(int fd, struct root_lookup *root_lookup)
 					memset(ruuid, 0, BTRFS_UUID_SIZE);
 				}
 
-				add_root(root_lookup, sh.objectid, 0,
+				if (add_root(root_lookup, sh.objectid, 0,
 					 sh.offset, flags, 0, NULL, 0, ogen,
-					 gen, t, uuid, puuid, ruuid);
+					 gen, t, uuid, puuid, ruuid) != 0)
+                    return -1;
 			}
 
 			off += sh.len;
@@ -1153,7 +1155,7 @@ static int filter_full_path(struct root_info *ri, u64 data)
 		tmp = malloc(len + add_len + 2);
 		if (!tmp) {
 			fprintf(stderr, "memory allocation failed\n");
-			exit(1);
+			return -1;
 		}
 		memcpy(tmp + add_len + 1, ri->full_path, len);
 		tmp[len + add_len + 1] = '\0';
@@ -1201,7 +1203,7 @@ struct btrfs_list_filter_set *btrfs_list_alloc_filter_set(void)
 	set = calloc(1, size);
 	if (!set) {
 		fprintf(stderr, "memory allocation failed\n");
-		exit(1);
+		return NULL;
 	}
 
 	set->total = BTRFS_LIST_NFILTERS_INCREASE;
@@ -1234,7 +1236,7 @@ int btrfs_list_setup_filter(struct btrfs_list_filter_set **filter_set,
 		if (!set) {
 			fprintf(stderr, "memory allocation failed\n");
 			free(tmp);
-			exit(1);
+			return -1;
 		}
 
 		memset(&set->filters[set->total], 0,
@@ -1870,23 +1872,30 @@ int btrfs_list_parse_filter_string(char *opt_arg,
 {
 
 	u64 arg;
+    int ret = 0;
 
 	switch (*(opt_arg++)) {
 	case '+':
-		arg = arg_strtou64(opt_arg);
+		arg = arg_strtou64(opt_arg,&ret);
+		if(ret != 0)
+            return ret;
 		type += 2;
 
 		btrfs_list_setup_filter(filters, type, arg);
 		break;
 	case '-':
-		arg = arg_strtou64(opt_arg);
+		arg = arg_strtou64(opt_arg,&ret);
+		if(ret != 0)
+            return ret;
 		type += 1;
 
 		btrfs_list_setup_filter(filters, type, arg);
 		break;
 	default:
 		opt_arg--;
-		arg = arg_strtou64(opt_arg);
+		arg = arg_strtou64(opt_arg,&ret);
+		if(ret != 0)
+            return ret;
 
 		btrfs_list_setup_filter(filters, type, arg);
 		break;
