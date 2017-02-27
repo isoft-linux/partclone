@@ -37,7 +37,7 @@ struct xfs_buftarg {
 	dev_t			dev;
 };
 
-extern void	libxfs_buftarg_init(struct xfs_mount *mp, dev_t ddev,
+extern int 	libxfs_buftarg_init(struct xfs_mount *mp, dev_t ddev,
 				    dev_t logdev, dev_t rtdev);
 
 #define LIBXFS_BBTOOFF64(bbs)	(((xfs_off_t)(bbs)) << BBSHIFT)

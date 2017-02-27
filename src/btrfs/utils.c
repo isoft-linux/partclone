@@ -2716,21 +2716,21 @@ u64 parse_size(char *s)
 
 	if (!s) {
 		error("size value is empty");
-		exit(1);
+		return ret;
 	}
 	if (s[0] == '-') {
 		error("size value '%s' is less equal than 0", s);
-		exit(1);
+		return ret;
 	}
 	ret = strtoull(s, &endptr, 10);
 	if (endptr == s) {
 		error("size value '%s' is invalid", s);
-		exit(1);
+		return ret;
 	}
 	if (endptr[0] && endptr[1]) {
 		error("illegal suffix contains character '%c' in wrong position",
 			endptr[1]);
-		exit(1);
+		return ret;
 	}
 	/*
 	 * strtoll returns LLONG_MAX when overflow, if this happens,
@@ -2738,7 +2738,7 @@ u64 parse_size(char *s)
 	 */
 	if (errno == ERANGE && ret == ULLONG_MAX) {
 		error("size value '%s' is too large for u64", s);
-		exit(1);
+		return ret;
 	}
 	if (endptr[0]) {
 		c = tolower(endptr[0]);
@@ -2765,19 +2765,19 @@ u64 parse_size(char *s)
 			break;
 		default:
 			error("unknown size descriptor '%c'", c);
-			exit(1);
+		    return ret;
 		}
 	}
 	/* Check whether ret * mult overflow */
 	if (fls64(ret) + fls64(mult) - 1 > 64) {
 		error("size value '%s' is too large for u64", s);
-		exit(1);
+		return ret;
 	}
 	ret *= mult;
 	return ret;
 }
-
-u64 parse_qgroupid(const char *p)
+/* if meet error, set retno = -1; the id returned is invalid. */
+u64 parse_qgroupid(const char *p,int *retno)
 {
 	char *s = strchr(p, '/');
 	const char *ptr_src_end = p + strlen(p);
@@ -2786,6 +2786,7 @@ u64 parse_qgroupid(const char *p)
 	u64 id;
 	int fd;
 	int ret = 0;
+    *retno = 0;
 
 	if (p[0] == '/')
 		goto path;
@@ -2823,7 +2824,8 @@ path:
 
 err:
 	error("invalid qgroupid or subvolume path: %s", p);
-	exit(-1);
+    *retno = -1;
+    return -1;
 }
 
 int open_file_or_dir3(const char *fname, DIR **dirstream, int open_flags)

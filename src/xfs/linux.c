@@ -157,7 +157,7 @@ platform_findsizes(char *path, int fd, long long *sz, int *bsz)
 
 		if (*bsz > max_block_alignment)
 			max_block_alignment = *bsz;
-		return;
+		return 0;
 	}
 
 	error = ioctl(fd, BLKGETSIZE64, &size);
@@ -185,6 +185,7 @@ platform_findsizes(char *path, int fd, long long *sz, int *bsz)
 	}
 	if (*bsz > max_block_alignment)
 		max_block_alignment = *bsz;
+    return 0;
 }
 
 char *
