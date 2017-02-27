@@ -877,8 +877,7 @@ void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char
 }
 
 void close_log(void) {
-	fclose(msg);
-        msg = NULL;
+	if (msg) fclose(msg); msg = NULL;
 }
 
 void load_image_desc_v1(file_system_info* fs_info, image_options* img_opt,
