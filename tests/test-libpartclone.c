@@ -38,9 +38,25 @@ int main(int argc, char *argv[])
                 type = LIBPARTCLONE_EXTFS;
             } else if (strcmp(fmt, "ntfs") == 0) {
                 type = LIBPARTCLONE_NTFS;
+            } else if (strcmp(fmt, "fat") == 0) {
+                type = LIBPARTCLONE_FAT;
+            } else if (strcmp(fmt, "btrfs") == 0) {
+                type = LIBPARTCLONE_BTRFS;
+            } else if (strcmp(fmt, "f2fs") == 0) {
+                type = LIBPARTCLONE_F2FS;
+            } else if (strcmp(fmt, "hfsp") == 0) {
+                type = LIBPARTCLONE_HFSP;
+            } else if (strcmp(fmt, "minix") == 0) {
+                type = LIBPARTCLONE_MINIX;
+            } else if (strcmp(fmt, "xfs") == 0) {
+                type = LIBPARTCLONE_XFS;
+            } else if (strcmp(fmt, "exfat") == 0) {
+                type = LIBPARTCLONE_EXFAT;
             } else {
-                //todo...
+                printf("DEBUG: %s, %s, line %d,no this type.test done!\n", __FILE__, __func__, __LINE__);
+                return 0;
             }
+
 
             src = argv[2];
             dst = argv[3];

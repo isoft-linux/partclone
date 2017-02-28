@@ -199,8 +199,11 @@ void read_super_blocks(char* device, file_system_info* fs_info) {
 	fs_version = 2;
     } else if (MAGIC3 == MINIX3_SUPER_MAGIC){
 	fs_version = 3;
-    } else
+    } else {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: bad magic number in super-block", __FILE__);
+        fs_close();
+        return;
+    }
 
     log_mesg(0, 0, 0, fs_opt.debug, "%s: get_first_zone %lu\n", __FILE__, get_first_zone());
     log_mesg(0, 0, 0, fs_opt.debug, "%s: get_nzones %lu\n", __FILE__, get_nzones());

@@ -28,28 +28,37 @@ struct f2fs_sb_info *sbi = &gfsck.sbi;
 extern struct f2fs_configuration config;
 
 /// open device
-static void fs_open(char* device){
+static int fs_open(char* device){
 
     int ret = 0;
     f2fs_init_configuration(&config);
     config.device_name = device;
 
 
-    if (f2fs_dev_is_umounted(&config) < 0)
+    if (f2fs_dev_is_umounted(&config) < 0) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: f2fs_dev_is_umounted\n", __FILE__);
+        return -1;
+    }
 
     /* Get device */
-    if (f2fs_get_device_info(&config) < 0)
+    if (f2fs_get_device_info(&config) < 0) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: f2fs_get_device_info fail\n", __FILE__);
+        return -1;
+    }
 
-    if (f2fs_do_mount(sbi) < 0)
+    if (f2fs_do_mount(sbi) < 0) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: f2fs_do_mount fail\n", __FILE__);
+        return -1;
+    }
 
     ret = fsck_init(sbi);
-    if (ret < 0)
+    if (ret < 0) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: fsck_init init fail\n", __FILE__);
+        return -1;
+    }
 
     fsck_chk_orphan_node(sbi);
+    return 0;
 
 }
 
@@ -111,7 +120,10 @@ extern void read_bitmap(char* device, file_system_info fs_info, unsigned long* b
 extern void read_super_blocks(char* device, file_system_info* fs_info)
 {
 
-    fs_open(device);
+    if (fs_open(device) != 0) {
+        fs_close();
+        return;
+    }
 
     struct f2fs_super_block *sb = F2FS_RAW_SUPER(sbi);
     struct f2fs_checkpoint *cp = F2FS_CKPT(sbi);

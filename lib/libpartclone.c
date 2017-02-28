@@ -30,6 +30,56 @@ int partClone(partType type,
     switch (type) {
     default:
         break;
+    case LIBPARTCLONE_FAT:
+        dp = dlopen(PLUGINDIR "/libpartclone.fat.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+        break;
+    case LIBPARTCLONE_BTRFS:
+        dp = dlopen(PLUGINDIR "/libpartclone.btrfs.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+        break;
+    case LIBPARTCLONE_F2FS:
+        dp = dlopen(PLUGINDIR "/libpartclone.f2fs.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+        break;
+    case LIBPARTCLONE_HFSP:
+        dp = dlopen(PLUGINDIR "/libpartclone.hfsp.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+        break;
+    case LIBPARTCLONE_MINIX:
+        dp = dlopen(PLUGINDIR "/libpartclone.minix.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+        break;
+    case LIBPARTCLONE_XFS:
+        dp = dlopen(PLUGINDIR "/libpartclone.xfs.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+        break;
+    case LIBPARTCLONE_EXFAT:
+        dp = dlopen(PLUGINDIR "/libpartclone.exfat.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+
+
     case LIBPARTCLONE_NTFS:
         dp = dlopen(PLUGINDIR "/libpartclone.ntfs.so", RTLD_NOW);
         if (dp == NULL) {

@@ -292,7 +292,7 @@ void dump_start_leaf(unsigned long* bitmap, struct btrfs_root *root, struct exte
 
 
 /// open device
-static void fs_open(char* device){
+static int fs_open(char* device){
 
     struct cache_tree root_cache;
     //struct btrfs_fs_info *info;
@@ -308,6 +308,7 @@ static void fs_open(char* device){
 
     if (!info) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: Couldn't open file system\n", __FILE__);
+        return -1;
     }
     root = info->fs_root;
 
@@ -315,13 +316,15 @@ static void fs_open(char* device){
 	    !extent_buffer_uptodate(info->dev_root->node) ||
 	    !extent_buffer_uptodate(info->chunk_root->node)) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: Critical roots corrupted, unable to fsck the FS\n", __FILE__);
+        return -1;
     }
 
 
     if(!root){
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: Unable to open %s\n", __FILE__, device);	
+        return -1;
     }
-
+    return 0;
 }
 
 /// close device
@@ -413,7 +416,10 @@ no_node:
 
 void read_super_blocks(char* device, file_system_info* fs_info)
 {    
-    fs_open(device);
+    if (fs_open(device) != 0) {
+        fs_close();
+        return;
+    }
 
     strncpy(fs_info->fs, btrfs_MAGIC, FS_MAGIC_SIZE);
 

@@ -246,7 +246,7 @@ scan_ag(
 
 
 
-static void fs_open(char* device)
+static int fs_open(char* device)
 {
 
     int		    open_flags;
@@ -305,7 +305,7 @@ static void fs_open(char* device)
     if (mp == NULL) {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: %s filesystem failed to initialize\nAborting.\n", __FILE__, device);
         // init error,mp is NULL
-        return;
+        return -1;
     } else if (mp->m_sb.sb_inprogress)  {
 	log_mesg(0, 1, 1, fs_opt.debug, "%s: %s filesystem failed to initialize\nAborting(inprogress).\n", __FILE__, device);
     } else if (mp->m_sb.sb_logstart == 0)  {
@@ -336,6 +336,7 @@ static void fs_open(char* device)
     log_mesg(3, 0, 0, fs_opt.debug, "%s: free block= %lli\n", __FILE__, mp->m_sb.sb_fdblocks);
     log_mesg(3, 0, 0, fs_opt.debug, "%s: used block= %lli\n", __FILE__, (mp->m_sb.sb_dblocks - mp->m_sb.sb_fdblocks));
     log_mesg(3, 0, 0, fs_opt.debug, "%s: device size= %lli\n", __FILE__, (mp->m_sb.sb_blocksize * mp->m_sb.sb_dblocks));
+    return 0;
 
 }
 
@@ -347,7 +348,10 @@ static void fs_close()
 
 void read_super_blocks(char* device, file_system_info* fs_info)
 {
-    fs_open(device);
+    if (fs_open(device) != 0) {
+        fs_close();
+        return;
+    }
     strncpy(fs_info->fs, xfs_MAGIC, FS_MAGIC_SIZE);
     fs_info->block_size  = mp->m_sb.sb_blocksize;
     fs_info->totalblock  = mp->m_sb.sb_dblocks;

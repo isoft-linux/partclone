@@ -44,7 +44,7 @@ unsigned long long total_block = 0;
 static unsigned long long get_used_block();
 
 /// get fet type
-static void get_fat_type(){
+static int get_fat_type(){
 
     off_t total_sectors;
     off_t logical_sector_size;
@@ -87,9 +87,11 @@ static void get_fat_type(){
         log_mesg(2, 0, 0, fs_opt.debug, "%s: FAT Type : FAT 32\n", __FILE__);
     } else {
         log_mesg(0, 1, 1, fs_opt.debug, "%s: Unknown fat type!!\n", __FILE__);
+        return -1;
     }
     log_mesg(2, 0, 0, fs_opt.debug, "%s: FS = %i\n", __FILE__, FS);
 
+    return 0;
 }
 
 /// return total sectors
@@ -374,7 +376,10 @@ void read_super_blocks(char* device, file_system_info* fs_info)
     log_mesg(2, 0, 0, fs_opt.debug, "%s: initial_image start\n", __FILE__);
     fs_open(device);
 
-    get_fat_type();
+    if (get_fat_type() != 0) {
+        fs_close();
+        return;
+    }
 
     total_sector = get_total_sector();
 

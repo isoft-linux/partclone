@@ -76,7 +76,7 @@ static void print_fork_data(HFSPlusForkData* fork){
 }
 
 /// open device
-static void fs_open(char* device){
+static int fs_open(char* device){
 
     char *buffer;
     short HFS_Version;
@@ -107,11 +107,14 @@ static void fs_open(char* device){
     } else {
         if (HFS_Clean)
             log_mesg(3, 0, 0, fs_opt.debug, "%s: HFS_Plus '%s' is clean\n", __FILE__, device);
-        else 
+        else {
             log_mesg(0, 1, 1, fs_opt.debug, "%s: HFS_Plus Volume '%s' is scheduled for a check or it was shutdown\nuncleanly. Please fix it by fsck.\n", __FILE__, device);
+            return -1;
+        }
     }
 
     free(buffer);
+    return 0;
 
 }
 
@@ -196,7 +199,10 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
 void read_super_blocks(char* device, file_system_info* fs_info)
 {
 
-    fs_open(device);
+    if (fs_open(device) != 0) {
+        fs_close();
+        return;
+    }
     strncpy(fs_info->fs, hfsplus_MAGIC, FS_MAGIC_SIZE);
     fs_info->block_size  = reverseInt(sb.blockSize);
     fs_info->totalblock  = reverseInt(sb.totalBlocks);
