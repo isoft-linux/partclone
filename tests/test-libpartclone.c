@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <dlfcn.h>
+#include <string.h>
 
 #include "libpartclone.h"
 
@@ -25,12 +26,47 @@ static void *callback(void *arg)
 
 int main(int argc, char *argv[]) 
 {
-    partClone(LIBPARTCLONE_EXTFS, 
+    partType type = LIBPARTCLONE_UNKNOWN;
+    const char *src = NULL;
+    const char *dst = NULL;
+    const char *fmt = NULL;
+    // command line[test clone  /dev/sda7 /home/xx extfs]
+    if (argc == 5) {
+        if (strcmp(argv[1],"clone") == 0) {
+            fmt = argv[4];
+            if (strcmp(fmt, "extfs") == 0) {
+                type = LIBPARTCLONE_EXTFS;
+            } else if (strcmp(fmt, "ntfs") == 0) {
+                type = LIBPARTCLONE_NTFS;
+            } else {
+                //todo...
+            }
+
+            src = argv[2];
+            dst = argv[3];
+
+            printf("DEBUG: %s, %s, line %d:clone [%s] to [%s],type[%s]\n", __FILE__, __func__, __LINE__,
+                   src,dst,fmt);
+
+            partClone(type,
+                      src,
+                      dst,
+                      callback,
+                      NULL);
+        }
+        printf("DEBUG: %s, %s, line %d:test done!\n", __FILE__, __func__, __LINE__);
+    } else {
+
+#if 1
+        printf("command line:test-libpartclone clone src dst file_type(extfs|ntfs|...)\n");
+#else
+        partClone(LIBPARTCLONE_EXTFS,
               "/dev/sda7", 
               "/home/test/gits/test/sda7_2.img", 
               callback, 
               NULL);
-    printf("DEBUG: %s, %s, line %d:test done!\n", __FILE__, __func__, __LINE__);
+#endif
+    }
 
     return 0;
 }

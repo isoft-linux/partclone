@@ -194,6 +194,8 @@ int main(int argc, char **argv)
 
 		/// get Super Block information from partition
 		read_super_blocks(source, &fs_info);
+                if (fs_info.block_size == 0)
+                    goto cleanup;
 
 		if (img_opt.checksum_mode != CSM_NONE && img_opt.blocks_per_checksum == 0) {
 
