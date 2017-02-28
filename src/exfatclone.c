@@ -64,13 +64,13 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
 	    pc_set_bit((uint64_t)block, bitmap, fs_info.totalblock);
 	    log_mesg(3, 0, 0, fs_opt.debug, "%s: used block %" PRId64 " \n", __FILE__, block);
 	    /// update progress
-	    update_pui(&prog, block, block, 0);
+            update_pui(&prog, block, block, 0,NULL);
 	}
     }
 
     fs_close();
     /// update progress
-    update_pui(&prog, 1, 1, 1);
+    update_pui(&prog, 1, 1, 1,NULL);
 }
 
 void read_super_blocks(char* device, file_system_info* fs_info)

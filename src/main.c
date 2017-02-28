@@ -390,7 +390,7 @@ int main(int argc, char **argv)
 	/**
 	 * thread to print progress
 	 */
-	pres = pthread_create(&prog_thread, NULL, thread_update_pui, NULL);
+        pres = pthread_create(&prog_thread, NULL, thread_update_pui, (void *)fptr);
 	if(pres)
 	    log_mesg(0, 1, 1, debug, "%s, %i, thread create error\n", __func__, __LINE__);
 
@@ -969,7 +969,7 @@ int main(int argc, char **argv)
 	pres = pthread_join(prog_thread, &p_result);
 	if(pres)
 	    log_mesg(0, 1, 1, debug, "%s, %i, thread join error\n", __func__, __LINE__);
-	update_pui(&prog, copied, block_id, done);
+        update_pui(&prog, copied, block_id, done,(void *)fptr);
 #ifndef CHKIMG
 	sync_data(dfw, &opt);
 #endif
@@ -996,7 +996,7 @@ cleanup:
 #endif
 
 #ifdef LIBPARTCLONE
-    if (fptr) fptr(arg);
+    //if (fptr) fptr(arg);
 #endif
 
 	return 0;      /// finish
@@ -1006,7 +1006,7 @@ void *thread_update_pui(void *arg) {
 
 	while (!done) {
 		if (!opt.quiet)
-			update_pui(&prog, copied, block_id, done);
+                        update_pui(&prog, copied, block_id, done,arg);
 		sleep(opt.fresh);
 	}
 	pthread_exit("exit");

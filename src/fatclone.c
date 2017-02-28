@@ -453,14 +453,14 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
         } else 
             log_mesg(2, 0, 0, fs_opt.debug, "%s: error fs\n", __FILE__);
         /// update progress
-        update_pui(&prog, i, i, 0);//keep update
+        update_pui(&prog, i, i, 0,NULL);//keep update
     }
 
     log_mesg(2, 0, 0, fs_opt.debug, "%s: done\n", __FILE__);
     fs_close();
 
     /// update progress
-    update_pui(&prog, 1, 1, 1);//finish
+    update_pui(&prog, 1, 1, 1,NULL);//finish
 }
 
 /// get_used_block - get FAT used blocks

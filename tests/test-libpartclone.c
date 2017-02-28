@@ -12,26 +12,25 @@
 
 #include "libpartclone.h"
 
-typedef int (*fptr_libpartclone_main)(int argc, 
-                                      char **argv, 
-                                      callback_routine fptr, 
-                                      void *arg);
-
 static void *callback(void *arg) 
 {
-    printf("DEBUG: %s, %s, line %d\n", __FILE__, __func__, __LINE__);
+    float *ret = (float *)arg;
+    //char *ss = (char *)arg;
+    if ((int)*ret%50 == 1)
+        printf("callback[%0.2f]\n", (float)*ret);
+
+    //printf("callback[%s]\n", ss);
     return NULL;
 }
 
 int main(int argc, char *argv[]) 
 {
-    // use api
     partClone(LIBPARTCLONE_EXTFS, 
               "/dev/sda7", 
               "/home/test/gits/test/sda7_2.img", 
               callback, 
               NULL);
-    printf("DEBUG: %s, %s, line %d: Bye ;-)\n", __FILE__, __func__, __LINE__);
+    printf("DEBUG: %s, %s, line %d:test done!\n", __FILE__, __func__, __LINE__);
 
     return 0;
 }

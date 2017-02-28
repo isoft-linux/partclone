@@ -50,11 +50,11 @@ typedef struct prog_stat_t prog_stat_t;
 
 extern int open_pui(int pui, unsigned long res);
 extern void close_pui(int pui);
-extern void update_pui(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done);
+extern void update_pui(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done,void(*callback)(void *arg));
 
 /// initial progress bar
 extern void progress_init(struct progress_bar *prog, int start, unsigned long long stop, unsigned long long total, int flag, int size);
 
 /// update number
-extern void progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done);
+extern void progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done,void(*callback)(void *arg));
 extern void Ncurses_progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done);

@@ -175,7 +175,7 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
             }
             block++;
             /// update progress
-            update_pui(&prog, block, block, 0);
+            update_pui(&prog, block, block, 0,NULL);
 
         }
         log_mesg(2, 0, 0, 2, "%s: next exten\n", __FILE__);
@@ -190,7 +190,7 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
 
     fs_close();
     /// update progress
-    update_pui(&prog, 1, 1, 1);
+    update_pui(&prog, 1, 1, 1,NULL);
 }
 
 void read_super_blocks(char* device, file_system_info* fs_info)

@@ -184,7 +184,7 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
 		}
 		
 		/// update progress
-		update_pui(&prog, current_block, current_block, 0);//keep update
+                update_pui(&prog, current_block, current_block, 0,NULL);//keep update
 	    }
 	    blk_itr += fs->super->s_blocks_per_group;
 	}
@@ -211,7 +211,7 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
 
     fs_close();
     /// update progress
-    update_pui(&prog, 1, 1, 1);//finish
+    update_pui(&prog, 1, 1, 1,NULL);//finish
     free(block_bitmap);
 }
 

@@ -99,12 +99,12 @@ extern void read_bitmap(char* device, file_system_info fs_info, unsigned long* b
 	}
 
 	/// update progress
-	update_pui(&prog, block, block, 0);
+        update_pui(&prog, block, block, 0,NULL);
     }
 
     fs_close();
     /// update progress
-    update_pui(&prog, 1, 1, 1);
+    update_pui(&prog, 1, 1, 1,NULL);
 }
 
 /// read super block and write to image head

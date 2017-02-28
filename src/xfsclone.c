@@ -413,13 +413,13 @@ void read_bitmap(char* device, file_system_info fs_info, unsigned long* bitmap, 
 
     fs_close();
     bitmap_done = 1;
-    update_pui(&prog, 1, 1, 1);
+    update_pui(&prog, 1, 1, 1,NULL);
 
 }
 void *thread_update_bitmap_pui(void *arg){
 
     while (bitmap_done == 0) {
-	update_pui(&prog, checked, checked, 0);
+        update_pui(&prog, checked, checked, 0,NULL);
 	sleep(2);
     }
     pthread_exit("exit");
