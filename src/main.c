@@ -161,14 +161,15 @@ int main(int argc, char **argv)
 	dfr = open_source(source, &opt);
 	if (dfr == -1) {
 		log_mesg(0, 1, 1, debug, "Error exit\n");
+        goto cleanup;
 	}
 
 #ifndef CHKIMG
 	dfw = open_target(target, &opt);
 	if (dfw == -1) {
-                log_mesg(0, 1, 1, debug, "Error exit\n");
-                // clone error!
-                goto cleanup;
+        log_mesg(0, 1, 1, debug, "Error exit\n");
+        // clone error!
+        goto cleanup;
 	}
 #else
 	dfw = -1;
