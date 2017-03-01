@@ -78,7 +78,14 @@ int partClone(partType type,
             printf("ERROR: %s\n", dlerror());
             goto cleanup;
         }
-
+        break;
+    case LIBPARTCLONE_UNKNOWN:
+        dp = dlopen(PLUGINDIR "/libpartclone.dd.so", RTLD_NOW);
+        if (dp == NULL) {
+            printf("ERROR: %s\n", dlerror());
+            goto cleanup;
+        }
+        break;
 
     case LIBPARTCLONE_NTFS:
         dp = dlopen(PLUGINDIR "/libpartclone.ntfs.so", RTLD_NOW);
@@ -153,7 +160,63 @@ int partRestore(partType type,
     return 0;
 }
 
-int partInfo(char *img, void *info) 
+int partInfo(char *img, partInfo_t *info)
 {
+    void *dp = NULL;
+    char *err = NULL;
+    int argc = 0;
+    char **argv = NULL;
+    if (img == NULL) {
+        printf("ERROR: source image is null!\n");
+        goto cleanup;
+    }
+
+    dp = dlopen(PLUGINDIR "/libpartclone.info.so", RTLD_NOW);
+    if (dp == NULL) {
+        printf("ERROR: %s\n", dlerror());
+        goto cleanup;
+    }
+
+    fptr_libpartclone_main libpartclone_main =
+        (fptr_libpartclone_main)dlsym(dp, "libpartclone_main");
+    err = dlerror();
+    if (err) {
+        printf("ERROR: %s\n", err);
+        goto cleanup;
+    }
+
+    // command[./test-libpartclone-info -s /home/test/gits/test/sda7.img]
+    // => argc argv
+    argc = 3;
+    argv = malloc((argc+1) * sizeof(char*));
+    argv[0] = strdup("partClone");
+    argv[1] = strdup("-s");
+    argv[2] = strdup(img);
+    argv[3] = NULL;
+
+    for (int i = 0;i < argc; i++) {
+        printf("argv[%s]\n",argv[i]);
+    }
+
+    libpartclone_main(argc, argv, NULL,(void *)info);
+
+cleanup:
+    if (dp) {
+        dlclose(dp);
+        dp = NULL;
+    }
+    if (argc > 0 && argv != NULL) {
+        for (int i = 0;i < argc; i++) {
+            free(argv[i]);
+            argv[i] = NULL;
+        }
+        free(argv);
+        argv = NULL;
+        argc = 0;
+    }
+
+    printf("DEBUG: %s, %s, line %d: Bye ;-)\n",
+            __FILE__, __func__, __LINE__);
+
     return 0;
 }

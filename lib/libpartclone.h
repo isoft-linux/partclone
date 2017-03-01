@@ -33,6 +33,18 @@ typedef enum {
 
 typedef void *(*callback_routine)(void *);
 
+typedef struct {
+    char type[16];
+    char devSize[32];
+    char usedSize[32];
+    char freeSize[32];
+    char blockSize[32];
+    int  imageVersion;
+    int  cpuBits;
+    char partcloneVersion[16];
+    // ......
+} partInfo_t;
+
 /* TODO: clone partition into image file */
 LIBPARTCLONE_EXPORTED int partClone(partType type, 
                                     char *part, 
@@ -48,7 +60,7 @@ LIBPARTCLONE_EXPORTED int partRestore(partType type,
                                       void *arg);
 
 /* TODO: define info structure instead of void ptr */
-LIBPARTCLONE_EXPORTED int partInfo(char *img, void *info);
+LIBPARTCLONE_EXPORTED int partInfo(char *img, partInfo_t *info);
 
 #ifdef __cplusplus
 }

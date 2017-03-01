@@ -168,6 +168,28 @@ int main(int argc, char **argv)
     log_mesg(0, 0, 1, opt.debug, "\n");
     print_image_info(img_head, img_opt, opt);
 
+#ifdef LIBPARTCLONE
+    partInfo_t *pinfo = (partInfo_t *)arg;
+
+    unsigned int     block_s = fs_info.block_size;
+    unsigned long long total = fs_info.totalblock;
+    unsigned long long used  = fs_info.usedblocks;
+    char size_str[32]="";
+
+    snprintf(pinfo->type,16,"%s",fs_info.fs);
+
+    print_readable_size_str(total*block_s, size_str);
+    snprintf(pinfo->devSize,32,"%s",size_str);
+
+    memset(size_str,0,sizeof(size_str));
+    print_readable_size_str(used*block_s, size_str);
+    snprintf(pinfo->usedSize,32,"%s",size_str);
+
+    memset(size_str,0,sizeof(size_str));
+    print_readable_size_str((total-used)*block_s, size_str);
+    snprintf(pinfo->freeSize,32,"%s",size_str);
+#endif
+
     close(dfr);     /// close source
     free(bitmap);   /// free bitmap
     close_log();

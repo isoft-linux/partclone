@@ -30,9 +30,13 @@ int main(int argc, char *argv[])
     const char *src = NULL;
     const char *dst = NULL;
     const char *fmt = NULL;
+    if (argc <2) {
+        printf("command line:test-libpartclone clone(info|...) src dst file_type(extfs|ntfs|...)\n");
+        return 0;
+    }
     // command line[test clone  /dev/sda7 /home/xx extfs]
-    if (argc == 5) {
-        if (strcmp(argv[1],"clone") == 0) {
+    if (strcmp(argv[1],"clone") == 0) {
+         if (argc == 5){
             fmt = argv[4];
             if (strcmp(fmt, "extfs") == 0) {
                 type = LIBPARTCLONE_EXTFS;
@@ -71,17 +75,19 @@ int main(int argc, char *argv[])
                       NULL);
         }
         printf("DEBUG: %s, %s, line %d:test done!\n", __FILE__, __func__, __LINE__);
-    } else {
+    } else if (strcmp(argv[1],"info") == 0){
+        partInfo_t info;
+        memset(&info, 0, sizeof(partInfo_t));
+        partInfo(argv[2],&info);
 
-#if 1
-        printf("command line:test-libpartclone clone src dst file_type(extfs|ntfs|...)\n");
-#else
-        partClone(LIBPARTCLONE_EXTFS,
-              "/dev/sda7", 
-              "/home/test/gits/test/sda7_2.img", 
-              callback, 
-              NULL);
-#endif
+        printf("\n\n\n[%s]'s info:\n",argv[2]);
+        printf("fileSystem:\t%s\ndeviceSize:\t%s\nspace in use:\t%s\nfree space:\t%s\n......\n",
+               info.type,
+               info.devSize,
+               info.usedSize,
+               info.freeSize);
+    } else {
+        printf("command line:test-libpartclone clone(info|...) src dst file_type(extfs|ntfs|...)\n");
     }
 
     return 0;
