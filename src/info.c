@@ -175,6 +175,8 @@ int main(int argc, char **argv)
     unsigned long long total = fs_info.totalblock;
     unsigned long long used  = fs_info.usedblocks;
     char size_str[32]="";
+    if (arg == NULL)
+        goto cleanup;
 
     snprintf(pinfo->type,16,"%s",fs_info.fs);
 
@@ -188,6 +190,7 @@ int main(int argc, char **argv)
     memset(size_str,0,sizeof(size_str));
     print_readable_size_str((total-used)*block_s, size_str);
     snprintf(pinfo->freeSize,32,"%s",size_str);
+cleanup:
 #endif
 
     close(dfr);     /// close source

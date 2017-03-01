@@ -24,6 +24,19 @@ static void *callback(void *arg)
     return NULL;
 }
 
+/*
+ * test commands:
+ *
+ * clone:
+ * ./test-libpartclone clone   /dev/sda7 /home/test/gits/test/sda7.img extf
+ *
+ * restore:
+ * ./test-libpartclone restore /home/test/gits/test/sda7.img /dev/sda7 extf
+ *
+ * info:
+ * ./test-libpartclone info /home/test/gits/test/sda7.img
+ *
+*/
 int main(int argc, char *argv[]) 
 {
     partType type = LIBPARTCLONE_UNKNOWN;
@@ -31,11 +44,10 @@ int main(int argc, char *argv[])
     const char *dst = NULL;
     const char *fmt = NULL;
     if (argc <2) {
-        printf("command line:test-libpartclone clone(info|...) src dst file_type(extfs|ntfs|...)\n");
+        printf("command line:test-libpartclone clone(info|restore) src dst file_type(extfs|ntfs|...)\n");
         return 0;
     }
-    // command line[test clone  /dev/sda7 /home/xx extfs]
-    if (strcmp(argv[1],"clone") == 0) {
+    if (strcmp(argv[1],"clone") == 0 || strcmp(argv[1],"restore") == 0) {
          if (argc == 5){
             fmt = argv[4];
             if (strcmp(fmt, "extfs") == 0) {
@@ -57,23 +69,33 @@ int main(int argc, char *argv[])
             } else if (strcmp(fmt, "exfat") == 0) {
                 type = LIBPARTCLONE_EXFAT;
             } else {
-                printf("DEBUG: %s, %s, line %d,no this type.test done!\n", __FILE__, __func__, __LINE__);
+                printf("DEBUG: %s, %s, line %d,no this type.test done!\n",
+                       __FILE__, __func__, __LINE__);
                 return 0;
             }
-
 
             src = argv[2];
             dst = argv[3];
 
-            printf("DEBUG: %s, %s, line %d:clone [%s] to [%s],type[%s]\n", __FILE__, __func__, __LINE__,
+            printf("DEBUG: %s, %s, line %d:clone [%s] to [%s],type[%s]\n",
+                   __FILE__, __func__, __LINE__,
                    src,dst,fmt);
-
-            partClone(type,
+            if (strcmp(argv[1],"clone") == 0) {
+                partClone(type,
                       src,
                       dst,
                       callback,
                       NULL);
-        }
+            } else if (strcmp(argv[1],"restore") == 0) {
+                partRestore(type,
+                      src,
+                      dst,
+                      callback,
+                      NULL);
+            }
+        } else {
+             printf("command line:test-libpartclone clone(info|restore) src dst file_type(extfs|ntfs|...)\n");
+         }
         printf("DEBUG: %s, %s, line %d:test done!\n", __FILE__, __func__, __LINE__);
     } else if (strcmp(argv[1],"info") == 0){
         partInfo_t info;
@@ -87,7 +109,7 @@ int main(int argc, char *argv[])
                info.usedSize,
                info.freeSize);
     } else {
-        printf("command line:test-libpartclone clone(info|...) src dst file_type(extfs|ntfs|...)\n");
+        printf("command line:test-libpartclone clone(info|restore) src dst file_type(extfs|ntfs|...)\n");
     }
 
     return 0;
