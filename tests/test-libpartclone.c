@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         return 0;
     }
     if (strcmp(argv[1],"clone") == 0 || strcmp(argv[1],"restore") == 0) {
-         if (argc == 5){
+         if (argc >= 5){
             fmt = argv[4];
             if (strcmp(fmt, "extfs") == 0) {
                 type = LIBPARTCLONE_EXTFS;
@@ -81,9 +81,14 @@ int main(int argc, char *argv[])
                    __FILE__, __func__, __LINE__,
                    src,dst,fmt);
             if (strcmp(argv[1],"clone") == 0) {
+                int overwite = 0;
+                if (argc >5) {
+                    overwite = (argv[5][0] == 'O') ? 1 : 0;
+                }
                 partClone(type,
                       src,
                       dst,
+                      overwite,
                       callback,
                       NULL);
             } else if (strcmp(argv[1],"restore") == 0) {

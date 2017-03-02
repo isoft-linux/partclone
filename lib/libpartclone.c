@@ -20,6 +20,7 @@ typedef int (*fptr_libpartclone_main)(int argc,
 int partClone(partType type,
               char *part,
               char *img,
+              int  overwite,
               callback_routine fptr,
               void *arg)
 {
@@ -120,7 +121,10 @@ int partClone(partType type,
     argv[2] = strdup("-c");
     argv[3] = strdup("-s");
     argv[4] = strdup(part);
-    argv[5] = strdup("-o");
+    if (overwite == 1)
+        argv[5] = strdup("-O");
+    else
+        argv[5] = strdup("-o");
     argv[6] = strdup(img);
     argv[7] = NULL;
 

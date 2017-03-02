@@ -49,6 +49,7 @@ typedef struct {
 LIBPARTCLONE_EXPORTED int partClone(partType type, 
                                     char *part, 
                                     char *img, 
+                                    int  overwite,
                                     callback_routine fptr, 
                                     void *arg);
 
