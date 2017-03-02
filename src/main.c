@@ -40,6 +40,9 @@ unsigned long long copied;
 unsigned long long block_id;
 int done;
 
+// to cancel clone.
+static int g_cancel_clone = 0;
+
 #include "partclone.h"
 
 /// cmd_opt structure defined in partclone.h
@@ -437,6 +440,9 @@ int main(int argc, char **argv)
 
 		block_id = 0;
 		do {
+                        if (g_cancel_clone == 1) {
+                            break;
+                        }
 			/// scan bitmap
 			unsigned long long i, blocks_skip, blocks_read;
 			unsigned int cs_added = 0, write_offset = 0;
@@ -1000,6 +1006,11 @@ cleanup:
 
 #ifdef LIBPARTCLONE
     //if (fptr) fptr(arg);
+    printf("\nopt.target[%s]\n",opt.target);
+    if (g_cancel_clone == 1 && opt.clone) {
+        g_cancel_clone = 0;
+        unlink(opt.target);
+    }
 #endif
 
 	return 0;      /// finish

@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     const char *src = NULL;
     const char *dst = NULL;
     const char *fmt = NULL;
-    if (argc <2) {
+    if (argc < 3) {
         printf("command line:test-libpartclone clone(info|restore) src dst file_type(extfs|ntfs|...)\n");
         return 0;
     }
