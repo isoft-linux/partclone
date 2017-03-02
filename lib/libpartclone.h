@@ -63,6 +63,7 @@ LIBPARTCLONE_EXPORTED int partRestore(partType type,
 /* TODO: define info structure instead of void ptr */
 LIBPARTCLONE_EXPORTED int partInfo(char *img, partInfo_t *info);
 
+LIBPARTCLONE_EXPORTED int partCloneCancel(int cancel);
 #ifdef __cplusplus
 }
 #endif

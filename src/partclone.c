@@ -409,7 +409,8 @@ int parse_options(int argc, char **argv, cmd_opt* opt) {
 	opt->chkimg++;
 	mode=1;
 #endif
-
+    optind = 0;
+    optarg = NULL;
 	while ((c = getopt_long(argc, argv, sopt, lopt, NULL)) != -1) {
 		switch (c) {
 			case 'h':

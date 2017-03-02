@@ -13,6 +13,15 @@
 
 #include "libpartclone.h"
 
+#include <pthread.h>
+void *thread_test(void *arg);
+typedef struct {
+    partType type;
+    char *src;
+    char *dst;
+    int  overwite;
+    void *callback ;
+}test_t;
 static void *callback(void *arg) 
 {
     float *ret = (float *)arg;
@@ -85,12 +94,33 @@ int main(int argc, char *argv[])
                 if (argc >5) {
                     overwite = (argv[5][0] == 'O') ? 1 : 0;
                 }
+#if 1
                 partClone(type,
                       src,
                       dst,
                       overwite,
                       callback,
                       NULL);
+#else
+                pthread_t prog_thread;
+                test_t tstr;// use local parm to test. use malloc finally.
+                tstr.type = type;
+                tstr.src = src;
+                tstr.dst = dst;
+                tstr.overwite = overwite;
+                tstr.callback = callback;
+
+                int ret = pthread_create(&prog_thread, NULL, thread_test, (void *)&tstr);
+                printf("\ncall thread[%d]!\n",ret);
+
+                sleep(10);
+
+                printf("\n\n\ncancel clone...\n");
+
+                partCloneCancel(1);
+
+                sleep(10);
+#endif
             } else if (strcmp(argv[1],"restore") == 0) {
                 partRestore(type,
                       src,
@@ -118,4 +148,19 @@ int main(int argc, char *argv[])
     }
 
     return 0;
+}
+
+void *thread_test(void *arg)
+{
+    printf("\nin thread!\n");
+
+    test_t *p = (test_t *)arg;
+    partClone(p->type,
+          p->src,
+          p->dst,
+          p->overwite,
+          p->callback,
+          NULL);
+
+    pthread_detach(pthread_self());
 }

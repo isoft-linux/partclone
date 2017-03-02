@@ -41,7 +41,7 @@ unsigned long long block_id;
 int done;
 
 // to cancel clone.
-static int g_cancel_clone = 0;
+extern int g_cancel_clone;
 
 #include "partclone.h"
 
@@ -107,8 +107,9 @@ int main(int argc, char **argv)
 	 * get option and assign to opt structure
 	 * check parameter and read from argv
 	 */
-	if (parse_options(argc, argv, &opt) == -1)
+        if (parse_options(argc, argv, &opt) == -1) {
         goto cleanup;
+        }
 
 	/**
 	 * if "-d / --debug" given

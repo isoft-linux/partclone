@@ -12,6 +12,8 @@
 
 #include "libpartclone.h"
 
+int g_cancel_clone = 0 ;
+
 typedef int (*fptr_libpartclone_main)(int argc,
                                       char **argv,
                                       callback_routine fptr,
@@ -330,5 +332,10 @@ cleanup:
     printf("DEBUG: %s, %s, line %d: Bye ;-)\n",
             __FILE__, __func__, __LINE__);
 
+    return 0;
+}
+int partCloneCancel(int cancel)
+{
+    g_cancel_clone = cancel;
     return 0;
 }
