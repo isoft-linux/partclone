@@ -74,7 +74,7 @@ test_libpartclone_SOURCES = test-libpartclone.c	\
 test_libpartclone_CFLAGS = ${LIBPARTCLONE_CFLAGS} \
 						   $(NULL)
 test_libpartclone_LDADD = ${DL_LIBS}  \
-						  -lpartclone	\
+						  ./../lib/libpartclone.la	\
 						  $(NULL)
 
 test_libpartclone_extfs_SOURCES = test-libpartclone-extfs.c	\
@@ -83,7 +83,6 @@ test_libpartclone_extfs_CFLAGS = -DPLUGINDIR=\""$(plugindir)"\"	\
 								 ${LIBPARTCLONE_CFLAGS}	\
 								 $(NULL)
 test_libpartclone_extfs_LDADD = ${DL_LIBS}	\
-                                 -lpartclone \
 								$(NULL)
 
 test_libpartclone_ntfs_SOURCES = test-libpartclone-ntfs.c	\
