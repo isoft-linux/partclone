@@ -87,6 +87,7 @@ int main(int argc, char **argv)
 	int			pres = 0;
 	pthread_t		prog_thread;
 	void			*p_result;
+        int                     cancel_clone = 0;
 
 	static const char *const bad_sectors_warning_msg =
 		"*************************************************************************\n"
@@ -183,6 +184,8 @@ int main(int argc, char **argv)
 	 * get partition information like super block, bitmap from device or image file.
 	 */
 	if (opt.clone) {
+            g_cancel_clone = 0;
+            cancel_clone = 0;
 
 		log_mesg(1, 0, 0, debug, "Initiate image options - version %s\n", IMAGE_VERSION_CURRENT);
 
@@ -442,6 +445,8 @@ int main(int argc, char **argv)
 		block_id = 0;
 		do {
                         if (g_cancel_clone == 1) {
+                            g_cancel_clone = 0;
+                            cancel_clone = 1;
                             break;
                         }
 			/// scan bitmap
@@ -1008,8 +1013,8 @@ cleanup:
 #ifdef LIBPARTCLONE
     //if (fptr) fptr(arg);
     printf("\nopt.target[%s]\n",opt.target);
-    if (g_cancel_clone == 1 && opt.clone) {
-        g_cancel_clone = 0;
+    if (cancel_clone == 1 && opt.clone) {
+        cancel_clone = 0;
         unlink(opt.target);
     }
 #endif
