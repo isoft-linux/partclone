@@ -47,21 +47,21 @@ typedef struct {
 
 /* TODO: clone partition into image file */
 LIBPARTCLONE_EXPORTED int partClone(partType type, 
-                                    char *part, 
-                                    char *img, 
-                                    int  overwite,
+                                    const char *part, 
+                                    const char *img, 
+                                    int  overwrite,
                                     callback_routine fptr, 
                                     void *arg);
 
 /* TODO: restore partition from image file */
 LIBPARTCLONE_EXPORTED int partRestore(partType type, 
-                                      char *img, 
-                                      char *part, 
+                                      const char *img, 
+                                      const char *part, 
                                       callback_routine fptr, 
                                       void *arg);
 
 /* TODO: define info structure instead of void ptr */
-LIBPARTCLONE_EXPORTED int partInfo(char *img, partInfo_t *info);
+LIBPARTCLONE_EXPORTED int partInfo(const char *img, partInfo_t *info);
 
 LIBPARTCLONE_EXPORTED int partCloneCancel(int cancel);
 #ifdef __cplusplus

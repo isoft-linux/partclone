@@ -20,9 +20,9 @@ typedef int (*fptr_libpartclone_main)(int argc,
                                       void *arg);
 
 int partClone(partType type,
-              char *part,
-              char *img,
-              int  overwite,
+              const char *part,
+              const char *img,
+              int  overwrite,
               callback_routine fptr,
               void *arg)
 {
@@ -123,7 +123,7 @@ int partClone(partType type,
     argv[2] = strdup("-c");
     argv[3] = strdup("-s");
     argv[4] = strdup(part);
-    if (overwite == 1)
+    if (overwrite == 1)
         argv[5] = strdup("-O");
     else
         argv[5] = strdup("-o");
@@ -158,8 +158,8 @@ cleanup:
 }
 
 int partRestore(partType type,
-                char *img,
-                char *part,
+                const char *img,
+                const char *part,
                 callback_routine fptr,
                 void *arg)
 {
@@ -274,7 +274,7 @@ cleanup:
     return 0;
 }
 
-int partInfo(char *img, partInfo_t *info)
+int partInfo(const char *img, partInfo_t *info)
 {
     void *dp = NULL;
     char *err = NULL;
