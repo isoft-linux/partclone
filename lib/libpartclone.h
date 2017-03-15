@@ -42,10 +42,20 @@ typedef struct {
     int  imageVersion;
     int  cpuBits;
     char partcloneVersion[16];
-    // ......
+    // TODO: Add more if any ...
 } partInfo_t;
 
-/* TODO: clone partition into image file */
+/**
+ * Clone Partition to Image file
+ *
+ * @param type Partition Type
+ * @param part Partition such as /dev/sda1 
+ * @param img Image save Path
+ * @param overwrite Whether or not Overwrite the Image file
+ * @param fptr Callback function pointer
+ * @param arg The arguement for Callback function pointer
+ * @return 0 is success but -1 is fail
+ */
 LIBPARTCLONE_EXPORTED int partClone(partType type, 
                                     const char *part, 
                                     const char *img, 
