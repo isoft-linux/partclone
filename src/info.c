@@ -109,7 +109,11 @@ void info_options (int argc, char **argv){
  * main functiom - print Image file metadata.
  */
 #ifdef LIBPARTCLONE
-int libpartclone_main(int argc, char **argv, callback_routine fptr, void *arg) 
+int libpartclone_main(int argc,
+                      char **argv,
+                      callback_routine callback,
+                      error_routine error,
+                      void *arg)
 {
 #else
 int main(int argc, char **argv) 
