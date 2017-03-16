@@ -61,7 +61,11 @@ fs_cmd_opt fs_opt;
  * main function - for clone or restore data
  */
 #ifdef LIBPARTCLONE
-int libpartclone_main(int argc, char **argv, callback_routine fptr, void *arg) 
+int libpartclone_main(int argc, 
+                      char **argv, 
+                      callback_routine callback, 
+                      error_routine error, 
+                      void *arg) 
 {
 #else
 int main(int argc, char **argv) 
@@ -166,6 +170,8 @@ int main(int argc, char **argv)
 	dfr = open_source(source, &opt);
 	if (dfr == -1) {
 		log_mesg(0, 1, 1, debug, "Error exit\n");
+        if (error)
+            error(arg, NULL);
         goto cleanup;
 	}
 
@@ -174,6 +180,8 @@ int main(int argc, char **argv)
 	if (dfw == -1) {
         log_mesg(0, 1, 1, debug, "Error exit\n");
         // clone error!
+        if (error)
+            error(arg, NULL);
         goto cleanup;
 	}
 #else
@@ -400,7 +408,7 @@ int main(int argc, char **argv)
 	/**
 	 * thread to print progress
 	 */
-        pres = pthread_create(&prog_thread, NULL, thread_update_pui, (void *)fptr);
+        pres = pthread_create(&prog_thread, NULL, thread_update_pui, callback);
 	if(pres)
 	    log_mesg(0, 1, 1, debug, "%s, %i, thread create error\n", __func__, __LINE__);
 
@@ -984,7 +992,7 @@ int main(int argc, char **argv)
 	pres = pthread_join(prog_thread, &p_result);
 	if(pres)
 	    log_mesg(0, 1, 1, debug, "%s, %i, thread join error\n", __func__, __LINE__);
-        update_pui(&prog, copied, block_id, done,(void *)fptr);
+        update_pui(&prog, copied, block_id, done, callback);
 #ifndef CHKIMG
 	sync_data(dfw, &opt);
 #endif
@@ -1011,7 +1019,6 @@ cleanup:
 #endif
 
 #ifdef LIBPARTCLONE
-    //if (fptr) fptr(arg);
     printf("\nopt.target[%s]\n",opt.target);
     if (cancel_clone == 1 && opt.clone) {
         cancel_clone = 0;

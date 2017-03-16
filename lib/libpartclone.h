@@ -40,6 +40,14 @@ typedef enum {
  */
 typedef void *(*callback_routine)(void *, void *);
 
+/**
+ * error routine
+ * @param arg thisPtr for C++ static member function
+ * @param msg Error message
+ * @return NULL
+ */
+typedef void *(*error_routine)(void *, void *);
+
 typedef struct {
     char type[16];
     char devSize[32];
@@ -59,15 +67,17 @@ typedef struct {
  * @param part Partition such as /dev/sda1 
  * @param img Image save Path
  * @param overwrite Whether or not Overwrite the Image file
- * @param fptr Callback function pointer
- * @param arg The arguement for Callback function pointer
+ * @param callback Callback function pointer
+ * @param error Error function pointer
+ * @param arg The arguement for Callback or Error function pointer
  * @return 0 for success but -1 for failure
  */
 LIBPARTCLONE_EXPORTED int partClone(partType type, 
                                     const char *part, 
                                     const char *img, 
                                     int  overwrite,
-                                    callback_routine fptr, 
+                                    callback_routine callback,
+                                    error_routine error,
                                     void *arg);
 
 /* TODO: restore partition from image file */

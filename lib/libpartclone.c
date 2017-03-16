@@ -20,14 +20,16 @@ int g_cancel_clone = 0;
 
 typedef int (*fptr_libpartclone_main)(int argc,
                                       char **argv,
-                                      callback_routine fptr,
+                                      callback_routine callback,
+                                      error_routine error,
                                       void *arg);
 
 int partClone(partType type,
               const char *part,
               const char *img,
               int  overwrite,
-              callback_routine fptr,
+              callback_routine callback,
+              error_routine error,
               void *arg)
 {
     void *dp = NULL;
@@ -109,7 +111,7 @@ int partClone(partType type,
     argv[6] = strdup(img);
     argv[7] = NULL;
 
-    libpartclone_main(argc, argv, fptr, NULL);
+    libpartclone_main(argc, argv, callback, error, NULL);
 
 cleanup:
     if (dp) {
@@ -222,7 +224,7 @@ int partRestore(partType type,
         printf("argv[%s]\n",argv[i]);
     }
 
-    libpartclone_main(argc, argv, fptr, NULL);
+    libpartclone_main(argc, argv, fptr, NULL, NULL);
 
 cleanup:
     if (dp) {
@@ -282,7 +284,7 @@ int partInfo(const char *img, partInfo_t *info)
     argv[2] = strdup(img);
     argv[3] = NULL;
 
-    libpartclone_main(argc, argv, NULL,(void *)info);
+    libpartclone_main(argc, argv, NULL, NULL, (void *)info);
 
 cleanup:
     if (dp) {

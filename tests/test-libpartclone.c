@@ -70,7 +70,7 @@ typedef struct {
     partType type;
     char *src;
     char *dst;
-    int  overwite;
+    int  overwrite;
     void *callback ;
 }test_t;
 static void *callback(void *arg) 
@@ -399,16 +399,17 @@ int main(int argc, char *argv[])
                    __FILE__, __func__, __LINE__,
                    src,dst,fmt);
             if (strcmp(argv[1],"clone") == 0) {
-                int overwite = 0;
+                int overwrite = 0;
                 if (argc >5) {
-                    overwite = (argv[5][0] == 'O') ? 1 : 0;
+                    overwrite = (argv[5][0] == 'O') ? 1 : 0;
                 }
 #if 1
                 partClone(type,
                       src,
                       dst,
-                      overwite,
+                      overwrite,
                       callback,
+                      NULL,
                       NULL);
 #else
                 pthread_t prog_thread;
@@ -416,7 +417,7 @@ int main(int argc, char *argv[])
                 tstr.type = type;
                 tstr.src = src;
                 tstr.dst = dst;
-                tstr.overwite = overwite;
+                tstr.overwrite = overwrite;
                 tstr.callback = callback;
 
                 int ret = pthread_create(&prog_thread, NULL, thread_test, (void *)&tstr);
@@ -489,8 +490,9 @@ void *thread_test(void *arg)
     partClone(p->type,
           p->src,
           p->dst,
-          p->overwite,
+          p->overwrite,
           p->callback,
+          NULL,
           NULL);
 
     pthread_detach(pthread_self());
