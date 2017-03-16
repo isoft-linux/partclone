@@ -25,9 +25,9 @@ typedef int (*fptr_libpartclone_main)(int argc,
                                       void *arg);
 
 int partClone(partType type,
-              const char *part,
-              const char *img,
-              int  overwrite,
+              const char *src,
+              const char *dst,
+              int overwrite,
               callback_routine callback,
               error_routine error,
               void *arg)
@@ -39,7 +39,7 @@ int partClone(partType type,
     char path[PATH_MAX] = { '\0' };
     int ret = 0;
 
-    if (!part || !img) {
+    if (!src || !dst) {
         ret = -1;
         goto cleanup;
     }
@@ -101,14 +101,19 @@ int partClone(partType type,
     }
     argv[0] = strdup("partClone");
     argv[1] = strdup("-d");
-    argv[2] = strdup("-c");
+    if (strlen(dst) > 4 && dst[0] == '/' && dst[1] == 'd' && dst[2] == 'e' && 
+        dst[3] == 'v') {
+        argv[2] = strdup("-b");
+    } else {
+        argv[2] = strdup("-c");
+    }
     argv[3] = strdup("-s");
-    argv[4] = strdup(part);
+    argv[4] = strdup(src);
     if (overwrite == 1)
         argv[5] = strdup("-O");
     else
         argv[5] = strdup("-o");
-    argv[6] = strdup(img);
+    argv[6] = strdup(dst);
     argv[7] = NULL;
 
     libpartclone_main(argc, argv, callback, error, arg);

@@ -61,11 +61,11 @@ typedef struct {
 } partInfo_t;
 
 /**
- * Clone Partition to Image file
+ * Clone Partition to Image file or Partition
  *
  * @param type Partition Type
- * @param part Partition such as /dev/sda1 
- * @param img Image save Path
+ * @param src Partition such as /dev/sda1 
+ * @param dst Image save Path or Partition such as /dev/sdb1
  * @param overwrite Whether or not Overwrite the Image file
  * @param callback Callback function pointer
  * @param error Error function pointer
@@ -73,8 +73,8 @@ typedef struct {
  * @return 0 for success but -1 for failure
  */
 LIBPARTCLONE_EXPORTED int partClone(partType type, 
-                                    const char *part, 
-                                    const char *img, 
+                                    const char *src, 
+                                    const char *dst, 
                                     int  overwrite,
                                     callback_routine callback,
                                     error_routine error,
