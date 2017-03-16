@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2017 Leslie Zhai <xiang.zhai@i-soft.com.cn>
+ * Copyright (c) 2017 fj <fujiang.zhu@i-soft.com.cn>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +32,13 @@ typedef enum {
     LIBPARTCLONE_UNKNOWN
 } partType;
 
-typedef void *(*callback_routine)(void *);
+/**
+ * callback routine
+ * @param percent
+ * @param remaining
+ * @return NULL
+ */
+typedef void *(*callback_routine)(void *, void *);
 
 typedef struct {
     char type[16];
@@ -54,7 +61,7 @@ typedef struct {
  * @param overwrite Whether or not Overwrite the Image file
  * @param fptr Callback function pointer
  * @param arg The arguement for Callback function pointer
- * @return 0 is success but -1 is fail
+ * @return 0 for success but -1 for failure
  */
 LIBPARTCLONE_EXPORTED int partClone(partType type, 
                                     const char *part, 

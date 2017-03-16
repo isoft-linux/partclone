@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2017 Leslie Zhai <xiang.zhai@i-soft.com.cn>
+ * Copyright (c) 2017 fj <fujiang.zhu@i-soft.com.cn>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,10 +10,13 @@
 
 #include <dlfcn.h>
 #include <stdio.h>
+#include <limits.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "libpartclone.h"
 
-int g_cancel_clone = 0 ;
+int g_cancel_clone = 0;
 
 typedef int (*fptr_libpartclone_main)(int argc,
                                       char **argv,
@@ -30,94 +34,69 @@ int partClone(partType type,
     char *err = NULL;
     int argc = 0;
     char **argv = NULL;
+    char path[PATH_MAX] = { '\0' };
+    int ret = 0;
+
+    if (!part || !img) {
+        ret = -1;
+        goto cleanup;
+    }
+
     switch (type) {
-    default:
-        break;
     case LIBPARTCLONE_FAT:
-        dp = dlopen(PLUGINDIR "/libpartclone.fat.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.fat.so", PLUGINDIR);
         break;
     case LIBPARTCLONE_BTRFS:
-        dp = dlopen(PLUGINDIR "/libpartclone.btrfs.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.btrfs.so", PLUGINDIR);
         break;
     case LIBPARTCLONE_F2FS:
-        dp = dlopen(PLUGINDIR "/libpartclone.f2fs.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.f2fs.so", PLUGINDIR);
         break;
     case LIBPARTCLONE_HFSP:
-        dp = dlopen(PLUGINDIR "/libpartclone.hfsp.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.hfsp.so", PLUGINDIR);
         break;
     case LIBPARTCLONE_MINIX:
-        dp = dlopen(PLUGINDIR "/libpartclone.minix.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.minix.so", PLUGINDIR);
         break;
     case LIBPARTCLONE_XFS:
-        dp = dlopen(PLUGINDIR "/libpartclone.xfs.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.xfs.so", PLUGINDIR);
         break;
     case LIBPARTCLONE_EXFAT:
-        dp = dlopen(PLUGINDIR "/libpartclone.exfat.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.exfat.so", PLUGINDIR);
         break;
-    case LIBPARTCLONE_UNKNOWN:
-        dp = dlopen(PLUGINDIR "/libpartclone.dd.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
-        break;
-
     case LIBPARTCLONE_NTFS:
-        dp = dlopen(PLUGINDIR "/libpartclone.ntfs.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.ntfs.so", PLUGINDIR);
         break;
     case LIBPARTCLONE_EXTFS:
-        dp = dlopen(PLUGINDIR "/libpartclone.extfs.so", RTLD_NOW);
-        if (dp == NULL) {
-            printf("ERROR: %s\n", dlerror());
-            goto cleanup;
-        }
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.extfs.so", PLUGINDIR);
         break;
+    default:
+    case LIBPARTCLONE_UNKNOWN:
+        snprintf(path, sizeof(path) - 1, "%s/libpartclone.dd.so", PLUGINDIR);
+        break;
+    }
+    dp = dlopen(path, RTLD_NOW);
+    if (!dp) {
+        ret = -1;
+        printf("ERROR: %s\n", dlerror());
+        goto cleanup;
     }
 
     fptr_libpartclone_main libpartclone_main =
         (fptr_libpartclone_main)dlsym(dp, "libpartclone_main");
     err = dlerror();
     if (err) {
+        ret = -1;
         printf("ERROR: %s\n", err);
         goto cleanup;
     }
 
-    // command[./test-libpartclone-extfs -d -c -s /dev/sda7 -o /home/test/gits/test/sda7.img]
-    // => argc argv
     argc = 7;
-    argv = malloc((argc+1) * sizeof(char*));
+    argv = malloc((argc + 1) * sizeof(char*));
+    if (!argv) {
+        ret = -1;
+        goto cleanup;
+    }
     argv[0] = strdup("partClone");
     argv[1] = strdup("-d");
     argv[2] = strdup("-c");
@@ -130,10 +109,6 @@ int partClone(partType type,
     argv[6] = strdup(img);
     argv[7] = NULL;
 
-    for (int i = 0;i < argc; i++) {
-        printf("argv[%s]\n",argv[i]);
-    }
-
     libpartclone_main(argc, argv, fptr, NULL);
 
 cleanup:
@@ -143,18 +118,17 @@ cleanup:
     }
     if (argc > 0 && argv != NULL) {
         for (int i = 0;i < argc; i++) {
-            free(argv[i]);
-            argv[i] = NULL;
+            if (argv[i]) {
+                free(argv[i]);
+                argv[i] = NULL;
+            }
         }
         free(argv);
         argv = NULL;
         argc = 0;
     }
 
-    printf("DEBUG: %s, %s, line %d: Bye ;-)\n",
-            __FILE__, __func__, __LINE__);
-
-    return 0;
+    return ret;
 }
 
 int partRestore(partType type,
@@ -257,8 +231,10 @@ cleanup:
     }
     if (argc > 0 && argv != NULL) {
         for (int i = 0;i < argc; i++) {
-            free(argv[i]);
-            argv[i] = NULL;
+            if (argv[1]) {
+                free(argv[i]);
+                argv[i] = NULL;
+            }
         }
         free(argv);
         argv = NULL;
@@ -269,8 +245,6 @@ cleanup:
         path = NULL;
     }
 
-    printf("DEBUG: %s, %s, line %d:restore done!\n",
-            __FILE__, __func__, __LINE__);
     return 0;
 }
 
@@ -308,10 +282,6 @@ int partInfo(const char *img, partInfo_t *info)
     argv[2] = strdup(img);
     argv[3] = NULL;
 
-    for (int i = 0;i < argc; i++) {
-        printf("argv[%s]\n",argv[i]);
-    }
-
     libpartclone_main(argc, argv, NULL,(void *)info);
 
 cleanup:
@@ -328,9 +298,6 @@ cleanup:
         argv = NULL;
         argc = 0;
     }
-
-    printf("DEBUG: %s, %s, line %d: Bye ;-)\n",
-            __FILE__, __func__, __LINE__);
 
     return 0;
 }

@@ -12,7 +12,8 @@
  */
 
 #include <stdio.h>
-//#include <time.h>
+
+#include "libpartclone.h"
 
 // progress display mode
 #define TEXT 0
@@ -50,11 +51,11 @@ typedef struct prog_stat_t prog_stat_t;
 
 extern int open_pui(int pui, unsigned long res);
 extern void close_pui(int pui);
-extern void update_pui(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done,void(*callback)(void *arg));
+extern void update_pui(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done, callback_routine callback);
 
 /// initial progress bar
 extern void progress_init(struct progress_bar *prog, int start, unsigned long long stop, unsigned long long total, int flag, int size);
 
 /// update number
-extern void progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done,void(*callback)(void *arg));
+extern void progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done, callback_routine callback);
 extern void Ncurses_progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done);

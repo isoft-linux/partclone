@@ -81,7 +81,7 @@ extern void close_pui(int pui){
     }
 }
 
-extern void update_pui(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done,void(*callback)(void *arg)){
+extern void update_pui(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done, callback_routine callback){
     
     if (done != 1) {
 	if ((difftime(time(0), prog->resolution_time) < prog->interval_time) && copied != 0)
@@ -91,7 +91,7 @@ extern void update_pui(struct progress_bar *prog, unsigned long long copied, uns
     if (prog->pui == NCURSES)
         Ncurses_progress_update(prog, copied, current, done);
     else if (prog->pui == TEXT)
-        progress_update(prog, copied, current, done,callback);
+        progress_update(prog, copied, current, done, callback);
 }
 
 static void calculate_speed(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done, prog_stat_t *prog_stat){
@@ -184,7 +184,7 @@ static void calculate_speed(struct progress_bar *prog, unsigned long long copied
 }
 
 /// update information at progress bar
-extern void progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done,void(*callback)(void *arg))
+extern void progress_update(struct progress_bar *prog, unsigned long long copied, unsigned long long current, int done, callback_routine callback)
 {
     char clear_buf = ' ';
     prog_stat_t prog_stat;
@@ -201,7 +201,7 @@ extern void progress_update(struct progress_bar *prog, unsigned long long copied
         //char buf[128]="";
         //sprintf(buf,"[%s]vs[%s]",prog_stat.Eformated, prog_stat.Rformated);
         if (callback)
-            callback((void*)&percent);
+            callback((void*)&percent, (void*)prog_stat.Rformated);
 
 	fprintf(stderr, _("\r%80c\rElapsed: %s, Remaining: %s, Completed: %6.2f%%"), clear_buf, prog_stat.Eformated, prog_stat.Rformated, prog_stat.percent);
 
