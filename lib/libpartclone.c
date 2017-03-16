@@ -111,7 +111,7 @@ int partClone(partType type,
     argv[6] = strdup(img);
     argv[7] = NULL;
 
-    libpartclone_main(argc, argv, callback, error, NULL);
+    libpartclone_main(argc, argv, callback, error, arg);
 
 cleanup:
     if (dp) {
