@@ -108,7 +108,7 @@ void init_checksum(int checksum_mode, unsigned char* seed, int debug) {
 /// Mail: info@lammertbies.nl
 /// http://www.lammertbies.nl/comm/info/nl_crc-calculation.html
 /// generate crc32 code
-uint32_t crc32(uint32_t seed, void* buffer, int size) {
+uint32_t crc32_(uint32_t seed, void* buffer, int size) {
 
 	unsigned char * buf = (unsigned char *)buffer;
 	const unsigned char * end = buf + size;
@@ -162,7 +162,7 @@ void update_checksum(unsigned char* checksum, char* buf, int size) {
 	{
 	case CSM_CRC32:
 		crc = (uint32_t*)checksum;
-		*crc = crc32(*crc, (unsigned char*)buf, size);
+		*crc = crc32_(*crc, (unsigned char*)buf, size);
 		break;
 
 	case CSM_CRC32_0001:

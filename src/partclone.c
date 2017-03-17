@@ -958,7 +958,7 @@ void load_image_desc(int* ret, cmd_opt* opt, image_head_v2* img_head, file_syste
 
 		// Verify checksum
 		init_crc32(&crc);
-		crc = crc32(crc, &buf_v2, sizeof(buf_v2) - CRC32_SIZE);
+		crc = crc32_(crc, &buf_v2, sizeof(buf_v2) - CRC32_SIZE);
 		if (crc != buf_v2.crc)
 			log_mesg(0, 1, 1, debug, "Invalid header checksum [0x%08X != 0x%08X]\n", crc, buf_v2.crc);
 
@@ -989,7 +989,7 @@ void write_image_desc(int* ret, file_system_info fs_info, image_options img_opt,
 	memcpy(&buf_v2.options, &img_opt, sizeof(image_options));
 
 	init_crc32(&buf_v2.crc);
-	buf_v2.crc = crc32(buf_v2.crc, &buf_v2, sizeof(image_desc_v2) - CRC32_SIZE);
+	buf_v2.crc = crc32_(buf_v2.crc, &buf_v2, sizeof(image_desc_v2) - CRC32_SIZE);
 
 	if (write_all(ret, (char*)&buf_v2, sizeof(image_desc_v2), opt) != sizeof(image_desc_v2))
 		log_mesg(0, 1, 1, opt->debug, "error writing image header to image: %s\n", strerror(errno));
@@ -1055,7 +1055,7 @@ void write_image_bitmap(int* ret, file_system_info fs_info, image_options img_op
 
 			init_crc32(&crc);
 
-			crc = crc32(crc, bitmap, BITS_TO_BYTES(fs_info.totalblock));
+			crc = crc32_(crc, bitmap, BITS_TO_BYTES(fs_info.totalblock));
 
 			if (write_all(ret, (char*)&crc, sizeof(crc), opt) != sizeof(crc))
 				log_mesg(0, 1, 1, debug, "write bitmap to image error: %s\n", strerror(errno));
@@ -1272,7 +1272,7 @@ void load_image_bitmap_bits(int* ret, cmd_opt opt, file_system_info fs_info, uns
 
 	init_crc32(&crc);
 
-	crc = crc32(crc, bitmap, bitmap_size);
+	crc = crc32_(crc, bitmap, bitmap_size);
 	if (crc != r_crc)
 		log_mesg(0, 1, 1, opt.debug, "read bitmap's crc error\n");
 }
