@@ -261,13 +261,12 @@ int partInfo(const char *img, partInfo_t *info)
     char *err = NULL;
     int argc = 0;
     char **argv = NULL;
-    if (img == NULL) {
-        printf("ERROR: source image is null!\n");
+
+    if (!img || !info)
         goto cleanup;
-    }
 
     dp = dlopen(PLUGINDIR "/libpartclone.info.so", RTLD_NOW);
-    if (dp == NULL) {
+    if (!dp) {
         printf("ERROR: %s\n", dlerror());
         goto cleanup;
     }
@@ -280,10 +279,8 @@ int partInfo(const char *img, partInfo_t *info)
         goto cleanup;
     }
 
-    // command[./test-libpartclone-info -s /home/test/gits/test/sda7.img]
-    // => argc argv
     argc = 3;
-    argv = malloc((argc+1) * sizeof(char*));
+    argv = malloc((argc + 1) * sizeof(char*));
     argv[0] = strdup("partClone");
     argv[1] = strdup("-s");
     argv[2] = strdup(img);
@@ -297,9 +294,11 @@ cleanup:
         dp = NULL;
     }
     if (argc > 0 && argv != NULL) {
-        for (int i = 0;i < argc; i++) {
-            free(argv[i]);
-            argv[i] = NULL;
+        for (int i = 0; i < argc; i++) {
+            if (argv[i]) {
+                free(argv[i]);
+                argv[i] = NULL;
+            }
         }
         free(argv);
         argv = NULL;
@@ -308,6 +307,7 @@ cleanup:
 
     return 0;
 }
+
 int partCloneCancel(int cancel)
 {
     g_cancel_clone = cancel;

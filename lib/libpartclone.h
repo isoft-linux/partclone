@@ -57,7 +57,9 @@ typedef struct {
     int  imageVersion;
     int  cpuBits;
     char partcloneVersion[16];
-    // TODO: Add more if any ...
+    unsigned long long total;   /* I need it for precise comparison! */
+    unsigned long long used;
+    /* TODO: Add more if any ... */
 } partInfo_t;
 
 /**
@@ -87,10 +89,17 @@ LIBPARTCLONE_EXPORTED int partRestore(partType type,
                                       callback_routine fptr, 
                                       void *arg);
 
-/* TODO: define info structure instead of void ptr */
+/**
+ * Partition Image information
+ *
+ * @param img the Image path
+ * @param info reference value
+ * @return 0
+ */
 LIBPARTCLONE_EXPORTED int partInfo(const char *img, partInfo_t *info);
 
 LIBPARTCLONE_EXPORTED int partCloneCancel(int cancel);
+
 #ifdef __cplusplus
 }
 #endif

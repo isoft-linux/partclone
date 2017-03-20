@@ -67,9 +67,9 @@ void info_options (int argc, char **argv){
 	opt.target  = 0;
 	opt.clone   = 0;
 	opt.restore = 0;
-	opt.info = 1;
-	
-
+	opt.info = 1;	
+    optind = 0;
+    optarg = NULL;
     while ((c = getopt_long(argc, argv, sopt, lopt, NULL)) != -1) {
 	switch (c) {
 	    case 'h':
@@ -178,25 +178,26 @@ int main(int argc, char **argv)
     unsigned int     block_s = fs_info.block_size;
     unsigned long long total = fs_info.totalblock;
     unsigned long long used  = fs_info.usedblocks;
-    char size_str[32]="";
-    if (arg == NULL)
+    char size_str[32] = { '\0' };
+    if (!arg)
         goto cleanup;
 
-    snprintf(pinfo->type,16,"%s",fs_info.fs);
+    pinfo->total = total;   /* I need it for precise comparison! */
+    pinfo->used = used;
+    snprintf(pinfo->type, sizeof(pinfo->type) - 1, "%s", fs_info.fs);
 
-    print_readable_size_str(total*block_s, size_str);
-    snprintf(pinfo->devSize,32,"%s",size_str);
+    print_readable_size_str(total * block_s, size_str);
+    snprintf(pinfo->devSize, sizeof(pinfo->devSize) - 1, "%s", size_str);
 
-    memset(size_str,0,sizeof(size_str));
-    print_readable_size_str(used*block_s, size_str);
-    snprintf(pinfo->usedSize,32,"%s",size_str);
+    memset(size_str, 0, sizeof(size_str));
+    print_readable_size_str(used * block_s, size_str);
+    snprintf(pinfo->usedSize, sizeof(pinfo->usedSize) - 1, "%s", size_str);
 
-    memset(size_str,0,sizeof(size_str));
-    print_readable_size_str((total-used)*block_s, size_str);
-    snprintf(pinfo->freeSize,32,"%s",size_str);
+    memset(size_str, 0, sizeof(size_str));
+    print_readable_size_str((total - used) * block_s, size_str);
+    snprintf(pinfo->freeSize, sizeof(pinfo->freeSize), "%s", size_str);
 cleanup:
 #endif
-
     close(dfr);     /// close source
     free(bitmap);   /// free bitmap
     close_log();
