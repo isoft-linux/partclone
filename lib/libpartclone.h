@@ -82,11 +82,21 @@ LIBPARTCLONE_EXPORTED int partClone(partType type,
                                     error_routine error,
                                     void *arg);
 
-/* TODO: restore partition from image file */
+/**
+ * Partition restore from the Image file
+ * @param type Partition Type
+ * @param img the Image file path
+ * @param part Partition
+ * @param callback
+ * @param error
+ * @param arg The arguement for callback and error function pointer
+ * @return 0
+ */
 LIBPARTCLONE_EXPORTED int partRestore(partType type, 
                                       const char *img, 
                                       const char *part, 
-                                      callback_routine fptr, 
+                                      callback_routine callback,
+                                      error_routine error,
                                       void *arg);
 
 /**

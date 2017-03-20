@@ -16,6 +16,8 @@
 
 #include "libpartclone.h"
 
+#define PROG_NAME "libpartclone"
+
 int g_cancel_clone = 0;
 
 typedef int (*fptr_libpartclone_main)(int argc,
@@ -99,7 +101,7 @@ int partClone(partType type,
         ret = -1;
         goto cleanup;
     }
-    argv[0] = strdup("partClone");
+    argv[0] = strdup(PROG_NAME);
     argv[1] = strdup("-d");
     if (strlen(dst) > 4 && dst[0] == '/' && dst[1] == 'd' && dst[2] == 'e' && 
         dst[3] == 'v') {
@@ -141,7 +143,8 @@ cleanup:
 int partRestore(partType type,
                 const char *img,
                 const char *part,
-                callback_routine fptr,
+                callback_routine callback,
+                error_routine error,
                 void *arg)
 {
     void *dp = NULL;
@@ -149,15 +152,14 @@ int partRestore(partType type,
     int  argc = 0;
     char **argv = NULL;
     char *soStr = NULL;
-    char *path  = NULL;
+    char path[PATH_MAX]  = { '\0' };
+
     if (img == NULL || part == NULL) {
         printf("ERROR: parm error!\n");
         goto cleanup;
     }
+
     switch (type) {
-    default:
-        soStr = "libpartclone.dd.so";
-        break;
     case LIBPARTCLONE_FAT:
         soStr = "libpartclone.fat.so";
         break;
@@ -171,33 +173,27 @@ int partRestore(partType type,
         soStr = "libpartclone.hfsp.so";
         break;
     case LIBPARTCLONE_MINIX:
-
         soStr = "libpartclone.minix.so";
         break;
     case LIBPARTCLONE_XFS:
-
         soStr = "libpartclone.xfs.so";
         break;
     case LIBPARTCLONE_EXFAT:
         soStr = "libpartclone.exfat.so";
         break;
-    case LIBPARTCLONE_UNKNOWN:
-        soStr = "libpartclone.dd.so";
-        break;
-
     case LIBPARTCLONE_NTFS:
         soStr = "libpartclone.ntfs.so";
         break;
     case LIBPARTCLONE_EXTFS:
         soStr = "libpartclone.extfs.so";
         break;
+    default:
+    case LIBPARTCLONE_UNKNOWN:
+        soStr = "libpartclone.dd.so";
+        break;
     }
-    int  len = strlen(soStr) + strlen(PLUGINDIR) + 8;
-    path = malloc( len * sizeof(char *));
-    if (path == NULL)
-        goto cleanup;
-    memset(path,0,len);
-    snprintf(path,len,"%s/%s",PLUGINDIR,soStr);
+
+    snprintf(path, sizeof(path) - 1, "%s/%s", PLUGINDIR, soStr);
     dp = dlopen(path, RTLD_NOW);
     if (dp == NULL) {
         printf("ERROR: %s\n", dlerror());
@@ -212,11 +208,9 @@ int partRestore(partType type,
         goto cleanup;
     }
 
-    // command[./test-libpartclone-extfs -d -r -s /home/test/gits/test/sda7.img -o /dev/sda7]
-    // => argc argv
     argc = 7;
-    argv = malloc((argc+1) * sizeof(char*));
-    argv[0] = strdup("partClone");
+    argv = malloc((argc + 1) * sizeof(char*));
+    argv[0] = strdup(PROG_NAME);
     argv[1] = strdup("-d");
     argv[2] = strdup("-r");
     argv[3] = strdup("-s");
@@ -225,11 +219,7 @@ int partRestore(partType type,
     argv[6] = strdup(part);
     argv[7] = NULL;
 
-    for (int i = 0;i < argc; i++) {
-        printf("argv[%s]\n",argv[i]);
-    }
-
-    libpartclone_main(argc, argv, fptr, NULL, NULL);
+    libpartclone_main(argc, argv, callback, error, arg);
 
 cleanup:
     if (dp) {
@@ -237,8 +227,8 @@ cleanup:
         dp = NULL;
     }
     if (argc > 0 && argv != NULL) {
-        for (int i = 0;i < argc; i++) {
-            if (argv[1]) {
+        for (int i = 0; i < argc; i++) {
+            if (argv[i]) {
                 free(argv[i]);
                 argv[i] = NULL;
             }
@@ -246,10 +236,6 @@ cleanup:
         free(argv);
         argv = NULL;
         argc = 0;
-    }
-    if (path) {
-        free(path);
-        path = NULL;
     }
 
     return 0;
@@ -281,7 +267,7 @@ int partInfo(const char *img, partInfo_t *info)
 
     argc = 3;
     argv = malloc((argc + 1) * sizeof(char*));
-    argv[0] = strdup("partClone");
+    argv[0] = strdup(PROG_NAME);
     argv[1] = strdup("-s");
     argv[2] = strdup(img);
     argv[3] = NULL;
