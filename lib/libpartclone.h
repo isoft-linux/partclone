@@ -32,6 +32,21 @@ typedef enum {
     LIBPARTCLONE_UNKNOWN
 } partType;
 
+/* FIXME: I have no idea why use char[] as the type? */
+typedef struct {
+    char type[16];              /* Why not partType */
+    char devSize[32];           /* Why not unsinged long long */
+    char usedSize[32];
+    char freeSize[32];
+    char blockSize[32];
+    int  imageVersion;
+    int  cpuBits;
+    char partcloneVersion[16];
+    unsigned long long total;   /* I need it for precise comparison! */
+    unsigned long long used;
+    /* TODO: Add more if any ... */
+} partInfo_t;
+
 /**
  * callback routine
  * @param percent
@@ -47,20 +62,6 @@ typedef void *(*callback_routine)(void *, void *);
  * @return NULL
  */
 typedef void *(*error_routine)(void *, void *);
-
-typedef struct {
-    char type[16];
-    char devSize[32];
-    char usedSize[32];
-    char freeSize[32];
-    char blockSize[32];
-    int  imageVersion;
-    int  cpuBits;
-    char partcloneVersion[16];
-    unsigned long long total;   /* I need it for precise comparison! */
-    unsigned long long used;
-    /* TODO: Add more if any ... */
-} partInfo_t;
 
 /**
  * Clone Partition to Image file or Partition
