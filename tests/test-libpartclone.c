@@ -449,11 +449,10 @@ int main(int argc, char *argv[])
         partInfo(argv[2],&info);
 
         printf("\n\n\n[%s]'s info:\n",argv[2]);
-        printf("fileSystem:\t%s\ndeviceSize:\t%s\nspace in use:\t%s\nfree space:\t%s\n......\n",
+        printf("fileSystem:\t%s\ndeviceSize:\t%llu\nspace in use:\t%llu\n......\n",
                info.type,
                info.devSize,
-               info.usedSize,
-               info.freeSize);
+               info.usedSize);
     } else if(strcmp(argv[1],"dd") == 0) {
 
         // test-libpartclone  dd 1 1 1 1 1

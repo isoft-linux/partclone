@@ -156,8 +156,10 @@ int main(int argc, char **argv)
 
     /// alloc a memory to restore bitmap
     bitmap = pc_alloc_bitmap(fs_info.totalblock);
-    if (bitmap == NULL)
-	log_mesg(0, 1, 1, opt.debug, "%s, %i, not enough memory\n", __func__, __LINE__);
+    if (bitmap == NULL) {
+        log_mesg(0, 1, 1, opt.debug, "%s, %i, not enough memory\n", __func__, __LINE__);
+        return -1;
+    }
 
     log_mesg(0, 0, 0, opt.debug, "initial main bitmap pointer %p\n", bitmap);
     log_mesg(0, 0, 0, opt.debug, "Initial image hdr: read bitmap table\n");
@@ -178,24 +180,43 @@ int main(int argc, char **argv)
     unsigned int     block_s = fs_info.block_size;
     unsigned long long total = fs_info.totalblock;
     unsigned long long used  = fs_info.usedblocks;
-    char size_str[32] = { '\0' };
     if (!arg)
         goto cleanup;
 
     pinfo->total = total;   /* I need it for precise comparison! */
     pinfo->used = used;
     snprintf(pinfo->type, sizeof(pinfo->type) - 1, "%s", fs_info.fs);
-
-    print_readable_size_str(total * block_s, size_str);
-    snprintf(pinfo->devSize, sizeof(pinfo->devSize) - 1, "%s", size_str);
-
-    memset(size_str, 0, sizeof(size_str));
-    print_readable_size_str(used * block_s, size_str);
-    snprintf(pinfo->usedSize, sizeof(pinfo->usedSize) - 1, "%s", size_str);
-
-    memset(size_str, 0, sizeof(size_str));
-    print_readable_size_str((total - used) * block_s, size_str);
-    snprintf(pinfo->freeSize, sizeof(pinfo->freeSize), "%s", size_str);
+    pinfo->devSize = total * block_s;
+    pinfo->usedSize = used * block_s;
+    char fs[FS_MAGIC_SIZE+1] = "";
+    snprintf(fs, sizeof(fs), "%s", fs_info.fs);
+    if (strncmp(fs,xfs_MAGIC,strlen(xfs_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_XFS;
+    } else if (strncmp(fs,extfs_MAGIC,strlen(extfs_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_EXTFS;
+    } else if (strncmp(fs,ext2_MAGIC,strlen(ext2_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_EXTFS;
+    } else if (strncmp(fs,ext3_MAGIC,strlen(ext3_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_EXTFS;
+    } else if (strncmp(fs,ext4_MAGIC,strlen(ext4_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_EXTFS;
+    } else if (strncmp(fs,hfsplus_MAGIC,strlen(hfsplus_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_HFSP;
+    } else if (strncmp(fs,fat_MAGIC,strlen(fat_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_FAT;
+    } else if (strncmp(fs,exfat_MAGIC,strlen(exfat_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_EXFAT;
+    } else if (strncmp(fs,ntfs_MAGIC,strlen(ntfs_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_NTFS;
+    } else if (strncmp(fs,minix_MAGIC,strlen(minix_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_MINIX;
+    } else if (strncmp(fs,btrfs_MAGIC,strlen(btrfs_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_BTRFS;
+    } else if (strncmp(fs,f2fs_MAGIC,strlen(f2fs_MAGIC)) == 0) {
+        pinfo->newType = LIBPARTCLONE_F2FS;
+    } else {
+        pinfo->newType = LIBPARTCLONE_UNKNOWN;
+    }
 cleanup:
 #endif
     close(dfr);     /// close source
