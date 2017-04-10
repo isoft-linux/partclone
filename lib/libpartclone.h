@@ -32,15 +32,14 @@ typedef enum {
     LIBPARTCLONE_UNKNOWN
 } partType;
 
-/* FIXME: I have no idea why use char[] as the type? */
+
 typedef struct {
-    char type[16];              /* Why not partType */
-    unsigned long long devSize;           /* Why not unsinged long long */
+    char type[16];
+    unsigned long long devSize;
     unsigned long long usedSize;
     partType newType;
-    unsigned long long total;   /* I need it for precise comparison! */
+    unsigned long long total;
     unsigned long long used;
-    /* TODO: Add more if any ... */
 } partInfo_t;
 
 /**
