@@ -1,4 +1,4 @@
-partcloneincludedir = $(includedir)/partclone-0.3.5
+partcloneincludedir = $(includedir)/libpartclone
 partcloneinclude_HEADERS = libpartclone.h	\
 						   $(NULL)
 
@@ -9,5 +9,6 @@ libpartclone_la_CFLAGS = -DLIBDIR=\""$(libdir)"\"	\
                         -DPLUGINDIR=\""$(plugindir)"\"   \
                         ${LIBPARTCLONE_CFLAGS}	\
 					     $(NULL)
+libpartclone_la_LDFLAGS = -version-info $(LT_VERSION_INFO)
 libpartclone_la_LIBADD = ${DL_LIBS}	\
 					     $(NULL)

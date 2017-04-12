@@ -39,12 +39,12 @@ if ENABLE_NCURSESW
 AM_CFLAGS+=-I/usr/include/ncursesw
 endif
 
-LIBPARTCLONE_CFLAGS=-I../lib
+LIBPARTCLONE_CFLAGS=-I$(top_srcdir)/lib -I.
 
 version.h: FORCE
 	$(TOOLBOX) --update-version
 
-main_files=main.c partclone.c progress.c checksum.c partclone.h progress.h gettext.h checksum.h
+main_files=main.c partclone.c progress.c checksum.c partclone.h progress.h gettext.h checksum.h bitmap.h
 
 libpartclone_info_la_SOURCES=info.c partclone.c checksum.c partclone.h fs_common.h checksum.h
 libpartclone_info_la_CFLAGS = ${LIBPARTCLONE_CFLAGS}

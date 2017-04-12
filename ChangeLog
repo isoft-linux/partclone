@@ -1,4 +1,225 @@
+2017-04-12  fj  <fujiang.zhu@i-soft.com.cn>
+
+	do not write log message.
+
+2017-04-10  fj  <fujiang.zhu@i-soft.com.cn>
+
+	remove some comments.
+
+2017-04-07  fj  <fujiang.zhu@i-soft.com.cn>
+
+	modify apt:getinfo
+
+2017-03-23  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Please fix partInfo_t as the comment suggested
+
+2017-03-20  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	[lib] Add error routine for partRestore API
+
+	[lib] Add total and used member for partinfo type
+
+2017-03-17  fj  <fujiang.zhu@i-soft.com.cn>
+
+	use local function:crc32_
+
+2017-03-16  fj  <fujiang.zhu@i-soft.com.cn>
+
+	modify api
+
+2017-03-16  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	[lib] Add partition to partition for partClone API
+
+	[lib] Fix typo for error routine arg paramter
+
+	[lib] Add error routine
+
+	[lib] Add remaining parameter for callback routine
+
+2017-03-15  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	[lib] Add more comment
+
+	[lib] Change char* to const char*
+
+2017-03-14  fj  <fujiang.zhu@i-soft.com.cn>
+
+	add get_process_api for dd
+
+2017-03-06  fj  <fujiang.zhu@i-soft.com.cn>
+
+	Merge branch 'libpartclone' of https://github.com/isoft-linux/partclone into libpartclone
+
+	modify cancel flag.
+
+2017-03-03  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	[tests] Fix libpartclone link file if not be installed
+
+2017-03-02  fj  <fujiang.zhu@i-soft.com.cn>
+
+	add new api to cancel clone.
+
+	add overwite flag for api.ui needs to check if file exist or not, then pass flag pam to api.
+
+	add flag to cancel clone.
+
+2017-03-01  fj  <fujiang.zhu@i-soft.com.cn>
+
+	add restore api
+
+	Merge branch 'libpartclone' of https://github.com/isoft-linux/partclone into libpartclone
+
+	get info seems ok
+
+2017-03-01  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	[partclone] Fix mounted partition is still be able to be cloned
+
+2017-02-28  fj  <fujiang.zhu@i-soft.com.cn>
+
+	clone:add types in partType
+
+	modify test case;
+
+	use callback fun to set percent value.
+
+2017-02-27  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	[tests] Add libpartclone testcase
+
+2017-02-27  fj  <fujiang.zhu@i-soft.com.cn>
+
+	Merge branch 'libpartclone' of https://github.com/isoft-linux/partclone into libpartclone
+
+	use libpartclone to clone extfs.
+
+2017-02-27  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Merge branch 'libpartclone' of github.com:isoft-linux/partclone into libpartclone
+
+	[partclone] Fix info segfault
+
+2017-02-27  fj  <fujiang.zhu@i-soft.com.cn>
+
+	Merge branch 'libpartclone' of https://github.com/isoft-linux/partclone into libpartclone
+
+	replace exit with return.
+
+2017-02-27  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Add README for testcase
+
+	[partclone] Export libpartclone_main for libpartclone.info.so
+	Testcase: tests/test-libpartclone-info.c
+
+	[partclone] Fix ctrlflow issue
+
+	[partclone] Fix segfault
+
+2017-02-24  fj  <fujiang.zhu@i-soft.com.cn>
+
+	modify version.h
+
+	Merge branch 'libpartclone' of https://github.com/isoft-linux/partclone into libpartclone
+
+	replace exit with return or other action.
+
+2017-02-24  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	[analzyer] Fix Memory-leak issue.
+
+	Add callback_routine for libpartclone.
+
+	Update README
+
+	Remove URL from code region.
+
+	Update README for checking git protocol is still able to use in GFW
+
+2017-02-23  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Implemented library
+
+	Prepare for libpartclone
+
+2017-02-16  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Show more error info for debug
+
+	Check fs is nullptr when using as library
+
+	we do NOT wannna exit when working as library
+
+	we do NOT wannna ncurses even pass -N parameter
+
+	Merge remote-tracking branch 'upstream/master'
+
+2017-02-02  Thomas Tsai  <thomas@nchc.org.tw>
+
+	add notice while bitmap count error
+
+2017-02-01  Thomas Tsai  <thomas@nchc.org.tw>
+
+	easy to run automake
+
+2017-02-01  Thomas Tsai  <tlinux.tsai@gmail.com>
+
+	Merge pull request #87 from robert-scheck/locate
+	Use "which" if "locate" doesn't exist (e.g. in build environments)
+
+2017-01-28  Robert Scheck  <robert@fedoraproject.org>
+
+	Use "which" if "locate" doesn't exist (e.g. in build environments)
+
+2017-01-16  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Fix undefined reference for C++
+
+2017-01-13  Thomas Tsai  <tlinux.tsai@gmail.com>
+
+	Merge pull request #84 from isoft-linux/master
+	Remove useless files using automake
+
+2017-01-12  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Add clang analyzer script
+
+2017-01-11  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	FIXME: failed to build with Clang Sanitizer
+
+	Do *NOT* use keyword as variable's name!
+
+	Fix Memory-leak issue #8
+
+	Fix Memory-leak #8
+
+	Added CLANG_ANALYZER_NORETURN for custom assert marco
+
+	Fix Null pointer passed as an argument to a 'nonnull' parameter issue #7
+
+	Fix Null pointer passed as an argument to a 'nonnull' parameter issue #7
+
+	Fix Use-after-free issue #3
+
+	Remove useless file
+
+	Merge remote-tracking branch 'upstream/master'
+
+	Update gitignore
+
 2017-01-10  Thomas Tsai  <thomas@nchc.org.tw>
+
+	merge and fix failmbr issue
+
+	fix failmbr compile issue
+
+	update fail-mbr compile issue
+
+	release 0.3.5a
 
 	update control
 
@@ -19,6 +240,35 @@
 2017-01-06  Thomas Tsai  <thomas@nchc.org.tw>
 
 	init fuse support; mount partclone image as block file for bt mode of clonezilla
+
+2016-12-23  Leslie Zhai  <xiangzhai83@gmail.com>
+
+	Fix Dereference of null pointer found with Clang Static Analyzer #6
+
+	Fix Array subscript is undefined issue #4
+
+	Fix Use-after-free found with Clang Static Analyzer #3
+
+	Fix Double free issue found with Clang Static Analyzer #2
+	Reviewers: @yetist
+
+	Fix Undefined allocation of 0 bytes issue
+	It was detected by Clang Static Analyzer #1
+	so I just add assert() to tell Clang Static Analyzer that this path is
+	unreachable.
+
+	Reviewers: @yetist
+
+	Remove useless files using automake
+	It often:
+
+	$ libtoolize --force --copy
+	$ aclocal -I m4
+	$ autoconf
+	$ autoheader
+	$ automake --add-missing
+
+	for automake project, so it is better to remove such useless files.
 
 2016-12-12  Thomas Tsai  <thomas@nchc.org.tw>
 

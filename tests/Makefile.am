@@ -61,7 +61,7 @@ endif
 endif
 CLEANFILES = floppy*
 
-LIBPARTCLONE_CFLAGS = -I../lib
+LIBPARTCLONE_CFLAGS=-I$(top_srcdir)/lib
 
 noinst_PROGRAMS = test-libpartclone	\
 				  test-libpartclone-extfs	\
@@ -74,7 +74,7 @@ test_libpartclone_SOURCES = test-libpartclone.c	\
 test_libpartclone_CFLAGS = ${LIBPARTCLONE_CFLAGS} \
 						   $(NULL)
 test_libpartclone_LDADD = ${DL_LIBS}  \
-						  ./../lib/libpartclone.la	\
+						  $(top_builddir)/lib/libpartclone.la	\
 						  $(NULL)
 
 test_libpartclone_extfs_SOURCES = test-libpartclone-extfs.c	\

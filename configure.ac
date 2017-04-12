@@ -1,5 +1,18 @@
-AC_INIT([Partclone], [0.3.5a], [thomas@nchc.org.tw])
-AM_INIT_AUTOMAKE([-Wall foreign])
+AC_PREREQ(2.59)
+
+m4_define([libpartclone_major_version], [0])
+m4_define([libpartclone_minor_version], [3])
+m4_define([libpartclone_micro_version], [5])
+m4_define([libpartclone_interface_age], [0])
+m4_define([libpartclone_binary_age], [m4_eval(100 * libpartclone_minor_version + libpartclone_micro_version)])
+m4_define([libpartclone_version], libpartclone_major_version.libpartclone_minor_version.libpartclone_micro_version)
+
+m4_define([libpartclone_lt_current], [m4_eval(100 * libpartclone_minor_version + libpartclone_micro_version - libpartclone_interface_age)])
+m4_define([libpartclone_lt_revision], [libpartclone_interface_age])
+m4_define([libpartclone_lt_age], [m4_eval(libpartclone_binary_age - libpartclone_interface_age)])
+
+AC_INIT([libpartclone], [libpartclone_version], [http://github.com/isoft-linux/libpartclone])
+AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip -Wno-portability])
 AM_GNU_GETTEXT_VERSION([0.16.1])
 AM_GNU_GETTEXT([external])
 AC_PROG_CC
@@ -11,6 +24,11 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
+
+AM_MAINTAINER_MODE
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
+LT_VERSION_INFO="libpartclone_lt_current:libpartclone_lt_revision:libpartclone_lt_age"
+AC_SUBST(LT_VERSION_INFO)
 
 # Enable large file support.
 AC_SYS_LARGEFILE
@@ -428,7 +446,7 @@ AC_ARG_ENABLE([mtrace],
 enable_memtrace=$enable_mtrace
 AM_CONDITIONAL(ENABLE_MEMTRACE, test "$enable_memtrace" = yes)
 
-plugindir='$(libdir)/libpartclone-0.3.5'
+plugindir='$(libdir)/libpartclone'
 AC_SUBST([plugindir])
 
 ##extra test
@@ -442,12 +460,11 @@ AM_CONDITIONAL(ENABLE_FS_TEST, test "$enable_fs_test" = yes)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
 	Makefile
-    partclone-0.3.5.pc
+    libpartclone.pc
 	src/Makefile
     lib/Makefile
 	fail-mbr/Makefile
 	po/Makefile.in
-	docs/Makefile
 	tests/Makefile
 	])
 AC_OUTPUT
