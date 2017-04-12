@@ -810,6 +810,7 @@ void close_ncurses() {
  * close_log	- to close file /var/log/partclone.log
  */
 int open_log(char* source) {
+    return 0;
 	msg = fopen(source,"w");
 	if (msg == NULL) {
 		fprintf(stderr, "open logfile %s error\n", source);
@@ -820,6 +821,7 @@ int open_log(char* source) {
 
 void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char *fmt, ...) {
 
+    return;// as this function is not MT-Safe;
 	va_list args;
 	cmd_opt opt;
 	char tmp_str[512];
@@ -878,6 +880,7 @@ void log_mesg(int log_level, int log_exit, int log_stderr, int debug, const char
 }
 
 void close_log(void) {
+    return;
 	if (msg) fclose(msg); msg = NULL;
 }
 
