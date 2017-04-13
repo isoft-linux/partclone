@@ -143,17 +143,22 @@ int main(int argc, char **argv)
      * open Image file
      */
     if (opt.source && strcmp(opt.source, "-") == 0) {
-	if ((dfr = fileno(stdin)) == -1)
+        if ((dfr = fileno(stdin)) == -1) {
 	    log_mesg(0, 1, 1, opt.debug, "info: open %s(stdin) error\n", opt.source);
+            return -1;
+        }
     } else {
 	dfr = open(opt.source, O_RDONLY);
-	if (dfr == -1)
+        if (dfr == -1) {
 	    log_mesg(0, 1, 1, opt.debug, "info: Can't open file(%s)\n", opt.source);
+            return -1;
+        }
     }
 
     /// get image information from image file
-    load_image_desc(&dfr, &opt, &img_head, &fs_info, &img_opt);
-
+    if (load_image_desc(&dfr, &opt, &img_head, &fs_info, &img_opt) != 0) {
+        return -1;
+    }
     /// alloc a memory to restore bitmap
     bitmap = pc_alloc_bitmap(fs_info.totalblock);
     if (bitmap == NULL) {

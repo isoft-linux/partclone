@@ -266,7 +266,12 @@ int main(int argc, char **argv)
 		log_mesg(1, 0, 1, debug, "Reading Super Block\n");
 
 		/// get image information from image file
-		load_image_desc(&dfr, &opt, &img_head, &fs_info, &img_opt);
+                if (load_image_desc(&dfr, &opt, &img_head, &fs_info, &img_opt) != 0) {
+                    if (error)
+                        error(arg, "Failed to get image information from image file!");
+                    goto cleanup;
+
+                }
 		cs_size = img_opt.checksum_size;
 		cs_reseed = img_opt.reseed_checksum;
 
