@@ -13,3 +13,6 @@ ChangeLog: FORCE
 	srcdir=. $(SHELL) ./toolbox --update-log
 
 FORCE:
+
+AM_DISTCHECK_CONFIGURE_FLAGS = --disable-reiserfs --enable-fat --enable-hfsp --enable-btrfs --disable-ncursesw --enable-ntfs --enable-exfat --enable-f2fs --enable-minix --disable-nilfs2 --enable-xfs
+#DISTCHECK_CONFIGURE_FLAGS = dc=ok

@@ -1,3 +1,15 @@
+2017-04-13  yetist  <xiaotian.wu@i-soft.com.cn>
+
+	Merge branch 'libpartclone' of github.com:isoft-linux/partclone into libpartclone
+
+2017-04-13  fj  <fujiang.zhu@i-soft.com.cn>
+
+	return -1 if meet error!!!
+
+2017-04-12  yetist  <xiaotian.wu@i-soft.com.cn>
+
+	rename to libpartclone
+
 2017-04-12  fj  <fujiang.zhu@i-soft.com.cn>
 
 	do not write log message.
