@@ -923,7 +923,7 @@ void load_image_desc_v2(file_system_info* fs_info, image_options* img_opt,
  *
  * note: img_head is meaning full only when img_opt.image_version is >= 2.
  */
-void load_image_desc(int* ret, cmd_opt* opt, image_head_v2* img_head, file_system_info* fs_info, image_options* img_opt) {
+int load_image_desc(int* ret, cmd_opt* opt, image_head_v2* img_head, file_system_info* fs_info, image_options* img_opt) {
 
 	image_desc_v2 buf_v2;
 	int r_size;
@@ -931,12 +931,16 @@ void load_image_desc(int* ret, cmd_opt* opt, image_head_v2* img_head, file_syste
 	int img_version;
 
 	r_size = read_all(ret, (char*)&buf_v2, sizeof(buf_v2), opt);
-	if (r_size != sizeof(buf_v2))
+        if (r_size != sizeof(buf_v2)) {
 		log_mesg(0, 1, 1, debug, "read image_hdr error=%d\n", r_size);
+                return -1;
+        }
 
 	/// check the image magic
-	if (memcmp(buf_v2.head.magic, IMAGE_MAGIC, IMAGE_MAGIC_SIZE))
+        if (memcmp(buf_v2.head.magic, IMAGE_MAGIC, IMAGE_MAGIC_SIZE)) {
 		log_mesg(0, 1, 1, debug, "This is not partclone image.\n");
+                return -1;
+        }
 
     assert(buf_v2.head.version != NULL);
 	img_version = atol(buf_v2.head.version);
@@ -948,8 +952,10 @@ void load_image_desc(int* ret, cmd_opt* opt, image_head_v2* img_head, file_syste
 		image_options_v1 extra;
 
 		// read the extra bytes
-		if (read_all(ret, extra.buff, sizeof(image_desc_v1) - sizeof(image_desc_v2), opt) == -1)
+                if (read_all(ret, extra.buff, sizeof(image_desc_v1) - sizeof(image_desc_v2), opt) == -1) {
 			log_mesg(0, 1, 1, debug, "read image_hdr error=%d\n (%s)", r_size, strerror(errno));
+                        return -1;
+                }
 
 		load_image_desc_v1(fs_info, img_opt, buf_v1->head, buf_v1->fs_info, opt);
 		memset(img_head, 0, sizeof(image_head_v2));
@@ -962,8 +968,10 @@ void load_image_desc(int* ret, cmd_opt* opt, image_head_v2* img_head, file_syste
 		// Verify checksum
 		init_crc32(&crc);
 		crc = crc32_(crc, &buf_v2, sizeof(buf_v2) - CRC32_SIZE);
-		if (crc != buf_v2.crc)
+                if (crc != buf_v2.crc) {
 			log_mesg(0, 1, 1, debug, "Invalid header checksum [0x%08X != 0x%08X]\n", crc, buf_v2.crc);
+                        return -1;
+                }
 
 		load_image_desc_v2(fs_info, img_opt, buf_v2.head, buf_v2.fs_info, buf_v2.options, opt);
 		memcpy(img_head, &(buf_v2.head), sizeof(image_head_v2));
@@ -976,10 +984,11 @@ void load_image_desc(int* ret, cmd_opt* opt, image_head_v2* img_head, file_syste
 
 		memcpy(version, buf_v2.head.version, IMAGE_VERSION_SIZE);
 		log_mesg(0, 1, 1, debug, "The image version is not supported [%s]\n", version);
-		break;
+                return -1;
 	}
 
 	} //switch
+        return 0;
 }
 
 void write_image_desc(int* ret, file_system_info fs_info, image_options img_opt, cmd_opt* opt) {
