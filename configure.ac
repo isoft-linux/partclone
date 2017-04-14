@@ -446,7 +446,7 @@ AC_ARG_ENABLE([mtrace],
 enable_memtrace=$enable_mtrace
 AM_CONDITIONAL(ENABLE_MEMTRACE, test "$enable_memtrace" = yes)
 
-plugindir='$(libdir)/libpartclone'
+plugindir='$(libdir)/libpartclone-libpartclone_version'
 AC_SUBST([plugindir])
 
 ##extra test
@@ -460,9 +460,9 @@ AM_CONDITIONAL(ENABLE_FS_TEST, test "$enable_fs_test" = yes)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
 	Makefile
-    libpartclone.pc
+	libpartclone.pc
 	src/Makefile
-    lib/Makefile
+	lib/Makefile
 	fail-mbr/Makefile
 	po/Makefile.in
 	tests/Makefile
