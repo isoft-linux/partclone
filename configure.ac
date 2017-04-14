@@ -25,6 +25,14 @@ AC_PROG_LN_S
 AC_CONFIG_MACRO_DIR([m4])
 LT_INIT
 
+LIBPARTCLONE_MAJOR_VERSION=libpartclone_major_version
+LIBPARTCLONE_MINOR_VERSION=libpartclone_minor_version
+LIBPARTCLONE_MICRO_VERSION=libpartclone_micro_version
+
+AC_SUBST(LIBPARTCLONE_MAJOR_VERSION)
+AC_SUBST(LIBPARTCLONE_MINOR_VERSION)
+AC_SUBST(LIBPARTCLONE_MICRO_VERSION)
+
 AM_MAINTAINER_MODE
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 LT_VERSION_INFO="libpartclone_lt_current:libpartclone_lt_revision:libpartclone_lt_age"
@@ -462,6 +470,7 @@ AC_CONFIG_FILES([
 	Makefile
 	libpartclone.pc
 	src/Makefile
+	lib/libpartclone.h
 	lib/Makefile
 	fail-mbr/Makefile
 	po/Makefile.in
