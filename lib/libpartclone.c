@@ -20,11 +20,33 @@
 
 int g_cancel_clone = 0;
 
+const int libpartclone_major_version = LIBPARTCLONE_MAJOR_VERSION;
+const int libpartclone_minor_version = LIBPARTCLONE_MINOR_VERSION;
+const int libpartclone_micro_version = LIBPARTCLONE_MICRO_VERSION;
+
 typedef int (*fptr_libpartclone_main)(int argc,
                                       char **argv,
                                       callback_routine callback,
                                       error_routine error,
                                       void *arg);
+
+const char * libpartclone_check_version (int required_major,
+        int required_minor,
+        int required_micro)
+{
+    int effective_micro = 100 * LIBPARTCLONE_MINOR_VERSION + LIBPARTCLONE_MICRO_VERSION;
+    int required_effective_micro = 100 * required_minor + required_micro;
+
+    if (required_major > LIBPARTCLONE_MAJOR_VERSION)
+        return "LibPartclone version too old (major mismatch)";
+    if (required_major < LIBPARTCLONE_MAJOR_VERSION)
+        return "LibPartclone version too new (major mismatch)";
+    if (required_effective_micro < effective_micro)
+        return "LibPartclone version too new (micro mismatch)";
+    if (required_effective_micro > effective_micro)
+        return "LibPartclone version too old (micro mismatch)";
+    return NULL;
+}
 
 int partClone(partType type,
               const char *src,

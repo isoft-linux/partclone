@@ -29,6 +29,10 @@ extern "C" {
 	 (LIBPARTCLONE_MAJOR_VERSION == (major) && LIBPARTCLONE_MINOR_VERSION == (minor) && \
 	  LIBPARTCLONE_MICRO_VERSION >= (micro)))
 
+extern const int libpartclone_major_version;
+extern const int libpartclone_minor_version;
+extern const int libpartclone_micro_version;
+
 typedef enum {
     LIBPARTCLONE_EXTFS = 0,
     LIBPARTCLONE_HFSP,
@@ -67,6 +71,18 @@ typedef void *(*callback_routine)(void *, void *);
  * @return NULL
  */
 typedef void *(*error_routine)(void *, void *);
+
+/**
+ * libpartclone version check, used for runtime.
+ *
+ * @param required_major The required major version number of the library
+ * @param required_minor The required minor version number of the library
+ * @param required_micro The required micro version number of the library
+ * @return NULL if version match, else return message for help.
+ */
+LIBPARTCLONE_EXPORTED const char * libpartclone_check_version (int required_major,
+		int required_minor,
+		int required_micro);
 
 /**
  * Clone Partition to Image file or Partition
