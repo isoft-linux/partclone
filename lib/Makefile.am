@@ -1,4 +1,4 @@
-partcloneincludedir = $(includedir)/libpartclone
+partcloneincludedir = $(includedir)/libpartclone/
 partcloneinclude_HEADERS = libpartclone.h	\
 						   $(NULL)
 
