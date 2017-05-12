@@ -1,5 +1,8 @@
 AUTOMAKE_OPTIONS = subdir-objects 
-SUBDIRS= po src lib tests fail-mbr
+SUBDIRS= po src lib tests
+if ENABLE_FAIL_MBR
+SUBDIRS += fail-mbr
+endif
 #SUBDIRS += docs
 
 ACLOCAL_AMFLAGS = -I m4

@@ -457,6 +457,16 @@ AM_CONDITIONAL(ENABLE_MEMTRACE, test "$enable_memtrace" = yes)
 plugindir='$(libdir)/libpartclone-libpartclone_version'
 AC_SUBST([plugindir])
 
+case $host_cpu in
+	i?86|x86_64)
+	build_fail_mbr=yes
+	;;
+	*)
+	build_fail_mbr=no
+	;;
+esac
+AM_CONDITIONAL(ENABLE_FAIL_MBR, test "$build_fail_mbr" = yes)
+
 ##extra test
 AC_ARG_ENABLE([fs-test],
     AS_HELP_STRING(
